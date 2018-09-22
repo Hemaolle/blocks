@@ -166,19 +166,56 @@ public class Board {
     /// new pieces are placed on top of the board for dropping on the board.</returns>
     public Dictionary<Vector2Int, int> GenerateReplacementPieces(List<Vector2Int> removed)
     {
-        int[] removedPiecesPerColumn = new int[Width];
         var result = new Dictionary<Vector2Int, int>();
-        foreach(var r in removed)
+        int[] removedPiecesPerColumn = RemovedPiecesPerColumn(removed);
+        for (int column = 0; column < Width; column++)
         {
-            removedPiecesPerColumn[r.x]++;
-        }
-        for(int column = 0; column < Width; column++)
-        {
-            for(int i = 0; i < removedPiecesPerColumn[column]; i++)
+            for (int i = 0; i < removedPiecesPerColumn[column]; i++)
             {
                 result.Add(new Vector2Int(column, -1 - i), RandomizePiece());
             }
         }
         return result;
+    }
+
+    private int[] RemovedPiecesPerColumn(List<Vector2Int> removed)
+    {
+        int[] removedPiecesPerColumn = new int[Width];
+        foreach (var r in removed)
+        {
+            removedPiecesPerColumn[r.x]++;
+        }
+        return removedPiecesPerColumn;
+    }
+
+    public void ReplacePieces(List<Vector2Int> removed, Dictionary<Vector2Int, int> replacement)
+    {
+        foreach (var r in removed)
+        {
+            pieces[r.x, r.y] = int.MinValue;
+        }
+
+        outer:
+        for (int y = 0; y < Height - 1; y++)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                if (At(x, y) > int.MinValue && At(x, y + 1) == int.MinValue)
+                {
+                    pieces[x, y + 1] = At(x, y);
+                    pieces[x, y] = int.MinValue;
+                    goto outer;
+                }
+            }
+        }
+
+        int[] removedPiecesPerColumn = RemovedPiecesPerColumn(removed);
+        for (int column = 0; column < Width; column++)
+        {
+            for (int i = 0; i < removedPiecesPerColumn[column]; i++)
+            {
+                pieces[column, i] = replacement[new Vector2Int(column, -1 - i)];
+            }
+        }
     }
 }

@@ -135,7 +135,7 @@ public class BoardTests {
     {
         var b = new Board(FiveByFive(), layout);
         List<Vector2Int> actual = b.ConnectedPiecesCoords(x, y);
-        List<Vector2Int> expected = GetXCoorinates(expectedS);
+        List<Vector2Int> expected = GetCharCoorinates(expectedS, 'X');
         Assert.That(actual, Is.EquivalentTo(expected));
     }
 
@@ -190,19 +190,124 @@ public class BoardTests {
     public void GenerateReplacementPieces(string removedS, string expectedS)
     {
         var b = new Board(FiveByFive());
-        var removed = GetXCoorinates(removedS);
+        var removed = GetCharCoorinates(removedS, 'X');
         Dictionary<Vector2Int, int> replacement = b.GenerateReplacementPieces(removed);
-
-        // Adjust expected coordinates to match the replacement coordinates that are on top of the board
-        IEnumerable<Vector2Int> expectedKeys = GetXCoorinates(expectedS).Select(x =>
-        {
-            x.y -= 5;
-            return x;
-        });
+        IEnumerable<Vector2Int> expectedKeys = GetCharCoorinates(expectedS, 'X').Select(BoardCoordinatesToReplacementCoordinates);
         Assert.That(replacement.Keys, Is.EquivalentTo(expectedKeys));
     }
 
-    private List<Vector2Int> GetXCoorinates(string s)
+    private Vector2Int BoardCoordinatesToReplacementCoordinates(Vector2Int c)
+    {
+        c.y -= 5;
+        return c;
+    }
+
+    [TestCase(
+        "10000\n" +
+        "10000\n" +
+        "10000\n" +
+        "10000\n" +
+        "10000",
+
+        "X....\n" +
+        "X....\n" +
+        "X....\n" +
+        "X....\n" +
+        "X....",
+
+        "3....\n" +
+        "3....\n" +
+        "3....\n" +
+        "3....\n" +
+        "3....",
+
+        "30000\n" +
+        "30000\n" +
+        "30000\n" +
+        "30000\n" +
+        "30000")]
+    [TestCase(
+        "11111\n" +
+        "00100\n" +
+        "00010\n" +
+        "00110\n" +
+        "00000",
+
+        "XXXXX\n" +
+        "..X..\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....",
+
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        "..3..\n" +
+        "33333",
+
+        "33333\n" +
+        "00300\n" +
+        "00010\n" +
+        "00110\n" +
+        "00000")]
+    [TestCase(
+        "22222\n" +
+        "20102\n" +
+        "20212\n" +
+        "20212\n" +
+        "22222",
+
+        "XXXXX\n" +
+        "X...X\n" +
+        "X.X.X\n" +
+        "X.X.X\n" +
+        "XXXXX",
+
+        "3...3\n" +
+        "3.3.3\n" +
+        "3.3.3\n" +
+        "33333\n" +
+        "33333",
+
+        "33333\n" +
+        "33333\n" +
+        "30303\n" +
+        "30313\n" +
+        "30113")]
+    [TestCase(
+        "22222\n" +
+        "20102\n" +
+        "20212\n" +
+        "20212\n" +
+        "22222",
+
+        ".....\n" +
+        "..X..\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....",
+
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        "..3..",
+
+        "22322\n" +
+        "20202\n" +
+        "20212\n" +
+        "20212\n" +
+        "22222")]
+    public void ReplacePieces(string layout, string removedS, string replacementS, string expected)
+    {
+        var b = new Board(FiveByFive(), layout);
+        var removed = GetCharCoorinates(removedS, 'X');
+        var replacement = GetCharCoorinates(replacementS, '3').Select(BoardCoordinatesToReplacementCoordinates).ToDictionary(x => x, x => 3);
+        b.ReplacePieces(removed, replacement);
+        Assert.That(b.ToString(), Is.EqualTo(expected));
+    }
+
+    private List<Vector2Int> GetCharCoorinates(string s, char c)
     {
         var result = new List<Vector2Int>();
         string[] lines = s.Split('\n');             
@@ -210,7 +315,7 @@ public class BoardTests {
         {            
             for (int x = 0; x < lines[y].Length; x++)
             {
-                if (lines[y][x] == 'X')
+                if (lines[y][x] == c)
                 {
                     result.Add(new Vector2Int(x, y));
                 }
@@ -227,11 +332,11 @@ public class BoardTests {
 
     private static Configuration FiveBySix()
     {
-        return new Configuration(5, 6, 3);        
+        return new Configuration(5, 6, 6);        
     }
 
     private static Configuration FiveByFive()
     {
-        return new Configuration(5, 5, 3);
+        return new Configuration(5, 5, 6);
     }
 }
