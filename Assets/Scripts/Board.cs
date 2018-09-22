@@ -40,9 +40,14 @@ public class Board {
         {
             for (int x = 0; x < configuration.BoardWidth; x++)
             {
-                pieces[x, y] = UnityEngine.Random.Range(0, configuration.NumColors);
+                pieces[x, y] = RandomizePiece();
             }
         }
+    }
+
+    private int RandomizePiece()
+    {
+        return UnityEngine.Random.Range(0, configuration.NumColors);
     }
 
     public int At(int x, int y)
@@ -151,5 +156,29 @@ public class Board {
         FloodFill(x - 1, y , targetType, replacementType);
         FloodFill(x + 1, y, targetType, replacementType);
         return;
+    }
+
+    /// <summary>
+    /// Generate replacement pieces.
+    /// </summary>
+    /// <param name="removed">Coordinates of removed pieces for which to generate replacement pieces</param>
+    /// <returns>A dictionary of coordinates and piece types for the new pieces. Keys are coordinates such that the
+    /// new pieces are placed on top of the board for dropping on the board.</returns>
+    public Dictionary<Vector2Int, int> GenerateReplacementPieces(List<Vector2Int> removed)
+    {
+        int[] removedPiecesPerColumn = new int[Width];
+        var result = new Dictionary<Vector2Int, int>();
+        foreach(var r in removed)
+        {
+            removedPiecesPerColumn[r.x]++;
+        }
+        for(int column = 0; column < Width; column++)
+        {
+            for(int i = 0; i < removedPiecesPerColumn[column]; i++)
+            {
+                result.Add(new Vector2Int(column, -1 - i), RandomizePiece());
+            }
+        }
+        return result;
     }
 }

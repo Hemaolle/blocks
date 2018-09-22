@@ -8,18 +8,18 @@ using System.Linq;
 public class BoardTests {
 
     [Test]
-    public void ToString_result_remains_unchanged_after_ToString_FromString_chain() {        
+    public void ToString_result_remains_unchanged_after_ToString_FromString_chain() {
         var b = new Board(FiveBySix());
         var s = b.ToString();
         b.FromString(s);
-        Assert.That(s == b.ToString());        
+        Assert.That(s == b.ToString());
     }
 
-    [TestCase(0,0, ExpectedResult = 1)]
-    [TestCase(1,0, ExpectedResult = 2)]
-    [TestCase(2,0, ExpectedResult = 3)]
-    [TestCase(3,0, ExpectedResult = 4)]
-    [TestCase(4,0, ExpectedResult = 5)]
+    [TestCase(0, 0, ExpectedResult = 1)]
+    [TestCase(1, 0, ExpectedResult = 2)]
+    [TestCase(2, 0, ExpectedResult = 3)]
+    [TestCase(3, 0, ExpectedResult = 4)]
+    [TestCase(4, 0, ExpectedResult = 5)]
     public int At_test_top_row(int x, int y)
     {
         return GenerateBoardAndTakePieceAt(
@@ -139,7 +139,67 @@ public class BoardTests {
         Assert.That(actual, Is.EquivalentTo(expected));
     }
 
+    [TestCase(
+        "X....\n" +
+        "X....\n" +
+        "X....\n" +
+        "X....\n" +
+        "X....",
+
+        "X....\n" +
+        "X....\n" +
+        "X....\n" +
+        "X....\n" +
+        "X....")]
+    [TestCase(
+        "XXXXX\n" +
+        "..X..\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....",
+
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        "..X..\n" +
+        "XXXXX")]
+    [TestCase(
+        "XXXXX\n" +
+        "X...X\n" +
+        "X.X.X\n" +
+        "X.X.X\n" +
+        "XXXXX",
+
+        "X...X\n" +
+        "X.X.X\n" +
+        "X.X.X\n" +
+        "XXXXX\n" +
+        "XXXXX")]
+    [TestCase(
+        ".....\n" +
+        "..X..\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....",
+
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        "..X..")]
+    public void GenerateReplacementPieces(string removedS, string expectedS)
     {
+        var b = new Board(FiveByFive());
+        var removed = GetXCoorinates(removedS);
+        Dictionary<Vector2Int, int> replacement = b.GenerateReplacementPieces(removed);
+
+        // Adjust expected coordinates to match the replacement coordinates that are on top of the board
+        IEnumerable<Vector2Int> expectedKeys = GetXCoorinates(expectedS).Select(x =>
+        {
+            x.y -= 5;
+            return x;
+        });
+        Assert.That(replacement.Keys, Is.EquivalentTo(expectedKeys));
     }
 
     private List<Vector2Int> GetXCoorinates(string s)
