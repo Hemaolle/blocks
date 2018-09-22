@@ -2,7 +2,7 @@
 using UnityEngine;
 
 public class Board {
-    Piece[,] pieces;
+    int[,] pieces;
     Configuration configuration;
     
     public int Width { get { return configuration.BoardWidth; } }
@@ -11,22 +11,29 @@ public class Board {
     public Board(Configuration configuration)
     {
         this.configuration = configuration;
-        pieces = new Piece[configuration.BoardWidth, configuration.BoardHeight];
-        Populate();
+        pieces = new int[configuration.BoardWidth, configuration.BoardHeight];
+        FillWithRandomPieces();
     }
 
-    private void Populate()
+    public Board(Configuration configuration, string s)
+    {
+        this.configuration = configuration;
+        pieces = new int[configuration.BoardWidth, configuration.BoardHeight];
+        FromString(s);
+    }
+
+    private void FillWithRandomPieces()
     {
         for (int y = 0; y < configuration.BoardHeight; y++)
         {
             for(int x = 0; x < configuration.BoardWidth; x++)
             {
-                pieces[x, y] = new Piece(Random.Range(0, configuration.NumColors));
+                pieces[x, y] = Random.Range(0, configuration.NumColors);
             }
         }
     }
 
-    public Piece At(int x, int y)
+    public int At(int x, int y)
     {
         return pieces[x, y];
     }
@@ -72,7 +79,7 @@ public class Board {
             {
                 // Picked char - '0' as the conversion here just because it would work for more than 10 different
                 // types of pieces too.
-                pieces[x, y] = new Piece((int)(lines[y][x] - '0'));
+                pieces[x, y] = (int)(lines[y][x] - '0');
             }
         }
     }
