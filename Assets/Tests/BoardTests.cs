@@ -2,6 +2,8 @@
 using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class BoardTests {
 
@@ -75,6 +77,86 @@ public class BoardTests {
             "00004\n" +
             "00005",
             x, y);
+    }
+
+    [TestCase(
+        "10000\n" +
+        "10000\n" +
+        "10000\n" +
+        "10000\n" +
+        "10000",
+        0, 0,
+
+        "X....\n" +
+        "X....\n" +
+        "X....\n" +
+        "X....\n" +
+        "X....")]
+    [TestCase(
+        "11111\n" +
+        "00100\n" +
+        "00010\n" +
+        "00110\n" +
+        "00000",
+        0, 0,
+
+        "XXXXX\n" +
+        "..X..\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....")]
+    [TestCase(
+        "22222\n" +
+        "20102\n" +
+        "20212\n" +
+        "20212\n" +
+        "22222",
+        0, 0,
+
+        "XXXXX\n" +
+        "X...X\n" +
+        "X.X.X\n" +
+        "X.X.X\n" +
+        "XXXXX")]
+    [TestCase(
+        "22222\n" +
+        "20102\n" +
+        "20212\n" +
+        "20212\n" +
+        "22222",
+        2, 1,
+
+        ".....\n" +
+        "..X..\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....")]
+    public void ConnectedPieces_test(string layout, int x, int y, string expectedS)
+    {
+        var b = new Board(FiveByFive(), layout);
+        List<Vector2Int> actual = b.ConnectedPiecesCoords(x, y);
+        List<Vector2Int> expected = GetXCoorinates(expectedS);
+        Assert.That(actual, Is.EquivalentTo(expected));
+    }
+
+    {
+    }
+
+    private List<Vector2Int> GetXCoorinates(string s)
+    {
+        var result = new List<Vector2Int>();
+        string[] lines = s.Split('\n');             
+        for (int y = 0; y < lines.Length; y++)
+        {            
+            for (int x = 0; x < lines[y].Length; x++)
+            {
+                if (lines[y][x] == 'X')
+                {
+                    result.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+        return result;
     }
 
     private static int GenerateBoardAndTakePieceAt(string layout, int x, int y)

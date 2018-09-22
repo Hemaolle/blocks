@@ -1,10 +1,12 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class Board {
     int[,] pieces;
     Configuration configuration;
-    
+
     public int Width { get { return configuration.BoardWidth; } }
     public int Height { get { return configuration.BoardHeight; } }
 
@@ -17,6 +19,16 @@ public class Board {
 
     public Board(Configuration configuration, string s)
     {
+        InitWith(configuration, s);
+    }   
+
+    public Board(Board b)
+    {
+        InitWith(b.configuration, b.ToString());
+    }
+
+    private void InitWith(Configuration configuration, string s)
+    {
         this.configuration = configuration;
         pieces = new int[configuration.BoardWidth, configuration.BoardHeight];
         FromString(s);
@@ -26,9 +38,9 @@ public class Board {
     {
         for (int y = 0; y < configuration.BoardHeight; y++)
         {
-            for(int x = 0; x < configuration.BoardWidth; x++)
+            for (int x = 0; x < configuration.BoardWidth; x++)
             {
-                pieces[x, y] = Random.Range(0, configuration.NumColors);
+                pieces[x, y] = UnityEngine.Random.Range(0, configuration.NumColors);
             }
         }
     }
@@ -44,21 +56,17 @@ public class Board {
     /// <returns></returns>
     public override string ToString()
     {
-        bool first = true;
-        StringBuilder sb = new StringBuilder();
-        for (int y = 0; y < configuration.BoardHeight; y++)
+        return Reduce(new StringBuilder(), (sb, x, y, type) =>
         {
-            if (!first)
+            sb.Append(pieces[x, y]);
+            bool lastColumn = x == Width - 1;
+            bool lastRow = y == Height - 1;
+            if (lastColumn && !lastRow)
             {
                 sb.Append('\n');
             }
-            for (int x = 0; x < configuration.BoardWidth; x++)
-            {
-                sb.Append(pieces[x, y]);
-            }
-            first = false;
-        }
-        return sb.ToString();
+            return sb;
+        }).ToString();
     }
 
     public void FromString(string s)
@@ -82,5 +90,66 @@ public class Board {
                 pieces[x, y] = (int)(lines[y][x] - '0');
             }
         }
+    }
+
+    /// <summary>
+    /// Return a list of coordinates for all the pieces that are four-way connected to the given coordinates
+    /// </summary>
+    public List<Vector2Int> ConnectedPiecesCoords(int x, int y)
+    {
+        var copy = new Board(this);
+        copy.FloodFill(x, y, At(x,y), int.MinValue);
+        return copy.FindAll(int.MinValue);
+    }
+
+    private List<Vector2Int> FindAll(int value)
+    {
+        return Reduce(new List<Vector2Int>(), (acc, x, y, type) =>
+        {
+            if (type == value)
+            {
+                acc.Add(new Vector2Int(x, y));
+            }
+            return acc;
+        });
+    } 
+
+    private T Reduce<T>(T accumulator, Func<T, int, int, int, T> reducer) {
+        for (int y = 0; y < Height; y++)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                accumulator = reducer(accumulator, x, y, At(x, y));
+            }
+        }
+        return accumulator;
+    }
+
+    // From https://en.wikipedia.org/wiki/Flood_fill
+    private void FloodFill(int x, int y, int targetType, int replacementType)
+    {
+        if (x < 0 || x >= Width)
+        {
+            return;
+        }
+        if (y < 0 || y >= Height)
+        {
+            return;
+        }
+        if (targetType == replacementType)
+        {
+            return;
+        }
+        if (At(x, y) != targetType)
+        {
+            return;
+        }
+        pieces[x, y] = replacementType;
+
+        FloodFill(x, y + 1, targetType, replacementType);
+        FloodFill(x, y - 1, targetType, replacementType);
+        FloodFill(x - 1, y , targetType, replacementType);
+        FloodFill(x + 1, y, targetType, replacementType);
+        return;
     }
 }
