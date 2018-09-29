@@ -7,8 +7,8 @@ public class Board {
     // TODO these could be nullabale ints.
     private int[,] pieces;
     private Configuration configuration;
-	private event EventHandler<BoardEventArgs> PieceRemoved;
-	private event EventHandler<BoardEventArgs> PieceAdded;	
+	private event EventHandler<PieceRemovedEventArgs> PieceRemoved;
+	private event EventHandler<PieceAddedEventArgs> PieceAdded;	
 
     public Board(Configuration configuration)
     {
@@ -170,7 +170,7 @@ public class Board {
     public Dictionary<Vector2Int, int> GenerateReplacementPieces(List<Vector2Int> removed)
     {
         var result = new Dictionary<Vector2Int, int>();
-        int[] removedPiecesPerColumn = CountInColumns(removed);
+        int[] removedPiecesPerColumn = Utilities.CountInColumns(removed, Width);
         for (int x = 0; x < Width; x++)
         {
             for (int i = 0; i < removedPiecesPerColumn[x]; i++)
@@ -179,21 +179,6 @@ public class Board {
             }
         }
         return result;
-    }
-
-    /// <summary>
-    /// Count for each column how many of the coordinates are in that column.
-    /// </summary>
-    /// <param name="coordinates">A list of coordinates</param>
-    /// <returns>Number of coordinates by column</returns>
-    private int[] CountInColumns(List<Vector2Int> coordinates)
-    {
-        int[] countInColumns = new int[Width];
-        foreach (var r in coordinates)
-        {
-            countInColumns[r.x]++;
-        }
-        return countInColumns;
     }
 
     /// <summary>
@@ -209,7 +194,7 @@ public class Board {
     {
         foreach (var r in removed)
         {
-            OnPieceRemoved(new BoardEventArgs(new Vector2Int(r.x, r.y), pieces[r.x, r.y]));
+            OnPieceRemoved(new PieceRemovedEventArgs(new Vector2Int(r.x, r.y)));
             pieces[r.x, r.y] = int.MinValue;
         }
 
@@ -227,14 +212,14 @@ public class Board {
             }
         }
 
-        int[] removedPiecesPerColumn = CountInColumns(removed);
+        int[] removedPiecesPerColumn = Utilities.CountInColumns(removed, Width);
         for (int x = 0; x < Width; x++)
         {
             for (int i = 0; i < removedPiecesPerColumn[x]; i++)
             {
                 int replacementPieceType = replacement[new Vector2Int(x, ReplacementYCoordinate(i))];
                 pieces[x, i] = replacementPieceType;
-                OnPieceAdded(new BoardEventArgs(new Vector2Int(x, i), replacementPieceType));
+                OnPieceAdded(new PieceAddedEventArgs(new Vector2Int(x, i), removedPiecesPerColumn[x], replacementPieceType));
             }
         }
     }
@@ -250,22 +235,22 @@ public class Board {
         return i;
     }
 
-	public void SubscribeToRemoves(EventHandler<BoardEventArgs> removeHandler)
+	public void SubscribeToRemoves(EventHandler<PieceRemovedEventArgs> removeHandler)
 	{
 		PieceRemoved += removeHandler;
 	}
 
-    public void SubscribeToAdds(EventHandler<BoardEventArgs> addHandler)
+    public void SubscribeToAdds(EventHandler<PieceAddedEventArgs> addHandler)
 	{
 		PieceAdded += addHandler;
 	}
 
-    private void OnPieceRemoved(BoardEventArgs e)
+    private void OnPieceRemoved(PieceRemovedEventArgs e)
     {
         PieceRemoved?.Invoke(this, e);
     }
 
-    private void OnPieceAdded(BoardEventArgs e)
+    private void OnPieceAdded(PieceAddedEventArgs e)
     {
         PieceAdded?.Invoke(this, e);
     }

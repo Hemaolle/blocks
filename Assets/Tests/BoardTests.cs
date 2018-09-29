@@ -294,9 +294,9 @@ public class BoardTests {
     {
         var b = new Board(FiveByFive(), layout);
         // TODO: A separate test for events using the same test cases.
-        var addEventArgsReceived = new List<BoardEventArgs>();
+        var addEventArgsReceived = new List<PieceAddedEventArgs>();
         b.SubscribeToAdds((o, e) => addEventArgsReceived.Add(e));
-        var removeEventArgsReceived = new List<BoardEventArgs>();
+        var removeEventArgsReceived = new List<PieceRemovedEventArgs>();
         b.SubscribeToRemoves((o, e) => removeEventArgsReceived.Add(e));
         var removed = GetCharCoorinates(removedS, 'X');
         var replacementAllThrees = GetCharCoorinates(replacementS, '3')
@@ -307,7 +307,9 @@ public class BoardTests {
         // TODO: flip expected and actual
         Assert.That(removed, Is.EquivalentTo(removeEventArgsReceived.Select(x => x.Coordinates)));
         Assert.That(replacementAllThrees.Keys, Is.EquivalentTo(addEventArgsReceived.Select(x => x.Coordinates)));
-        Assert.That(addEventArgsReceived.All(x => x.PieceType == 3));
+        Assert.That(addEventArgsReceived.All(x => x.PieceType == 3));        
+        var removalsInColumns = Utilities.CountInColumns(removed, b.Width);
+        Assert.That(addEventArgsReceived.All(x => x.AdditionsInSameColumn == removalsInColumns[x.Coordinates.x]));
     }
 
     private List<Vector2Int> GetCharCoorinates(string s, char c)
