@@ -10,11 +10,11 @@ public class BoardController : MonoBehaviour {
     public int boardWidth;
     public int boardHeight;
     public int colors;
-    public float newPieceVelocity;
+    public float pieceAcceleration;
 
+    private World world;
     private Board board;
     private Dictionary<Vector2Int, GameObject> pieces = new Dictionary<Vector2Int, GameObject>();
-    Vector2 boardCenter;
 
 	// Use this for initialization
 	void Start () {
@@ -23,13 +23,15 @@ public class BoardController : MonoBehaviour {
         board.SubscribeToRemoves(PieceRemoved);
         board.SubscibeToMoves(PieceMoved);
 
-        boardCenter = new Vector2(boardWidth / 2 * pieceWidth, boardHeight / 2 * pieceHeight);
+        Vector2 boardCenter = new Vector2(boardWidth / 2 * pieceWidth, boardHeight / 2 * pieceHeight);
         bottom.position = transform.position + Vector3.down * (boardCenter.y + pieceHeight / 2);
+        world = new World(pieceAcceleration, pieceWidth, pieceHeight, transform.position, boardCenter);
+
         for (int y = 0; y < board.Height; y++)
         {
             for (int x = 0; x < board.Width; x++)
             {
-                InstantiatePiece(new Vector2Int(x, y), NewPiecePosition(x, y), board.At(x, y));
+                InstantiatePiece(new Vector2Int(x, y), world.BoardToWorldCoordinates(new Vector2Int(x, y)), board.At(x, y));
             }
         }
 	}
@@ -41,13 +43,12 @@ public class BoardController : MonoBehaviour {
 
     void PieceAdded(object sender, PieceAddedEventArgs e)
     {
-        var p = InstantiatePiece(e.Coordinates, NewPiecePosition(e.Coordinates.x, e.Coordinates.y - e.AdditionsInSameColumn), e.PieceType);
-        p.GetComponent<Rigidbody2D>().velocity = new Vector3(0, -newPieceVelocity, 0);
+        InstantiatePiece(e.Coordinates, world.BoardToWorldCoordinates(new Vector2Int(e.Coordinates.x, e.Coordinates.y - e.AdditionsInSameColumn)), e.PieceType);
     }
 
     void PieceMoved(object sender, PieceMovedEventArgs e)
     {
-        pieces[e.OldCoordinates].GetComponent<PieceController>().SetCoordinates(e.NewCoordinates);
+        pieces[e.OldCoordinates].GetComponent<PieceController>().SetBoardPosition(e.NewCoordinates);
         pieces.Add(e.NewCoordinates, pieces[e.OldCoordinates]);
         pieces.Remove(e.OldCoordinates);        
     }
@@ -59,13 +60,9 @@ public class BoardController : MonoBehaviour {
             Quaternion.identity, boardParent);
         var pc = newPiece.GetComponent<PieceController>();
         pc.SetBoard(board);
-        pc.SetCoordinates(boardCoordinates);
+        pc.SetBoardPosition(boardCoordinates);
+        pc.SetWorld(world);        
         pieces.Add(boardCoordinates, newPiece);
         return newPiece;
-    }
-
-    private Vector3 NewPiecePosition(int x, int y)
-    {
-        return transform.position + new Vector3(x * pieceWidth - boardCenter.x, -y * pieceHeight + boardCenter.y, 0);
     }
 }

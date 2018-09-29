@@ -360,9 +360,10 @@ MonoBehaviour:
   bottom: {fileID: 363803538}
   pieceWidth: 50
   pieceHeight: 50
-  boardWidth: 5
-  boardHeight: 5
-  colors: 6
+  boardWidth: 20
+  boardHeight: 20
+  colors: 4
+  pieceAcceleration: 100
 --- !u!114 &1313145089
 MonoBehaviour:
   m_ObjectHideFlags: 0
