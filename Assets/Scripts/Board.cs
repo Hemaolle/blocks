@@ -27,6 +27,13 @@ public class Board {
         InitWith(b.configuration, b.ToString());
     }
 
+    public void SelectPiece(int x, int y)
+    {
+        List<Vector2Int> piecesToRemove = ConnectedPiecesCoords(x, y);
+        Dictionary<Vector2Int, int> replacementPieces = GenerateReplacementPieces(piecesToRemove);
+        ReplacePieces(piecesToRemove, replacementPieces);
+    }
+
     public int Width { get { return configuration.BoardWidth; } }
     public int Height { get { return configuration.BoardHeight; } }
 
