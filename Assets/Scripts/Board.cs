@@ -27,9 +27,9 @@ public class Board {
         InitWith(b.configuration, b.ToString());
     }
 
-    public void SelectPiece(int x, int y)
+    public void SelectPiece(Vector2Int coordinates)
     {
-        List<Vector2Int> piecesToRemove = ConnectedPiecesCoords(x, y);
+        List<Vector2Int> piecesToRemove = ConnectedPiecesCoords(coordinates.x, coordinates.y);
         Dictionary<Vector2Int, int> replacementPieces = GenerateReplacementPieces(piecesToRemove);
         ReplacePieces(piecesToRemove, replacementPieces);
     }
