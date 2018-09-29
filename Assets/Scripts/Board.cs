@@ -4,10 +4,14 @@ using System.Text;
 using UnityEngine;
 
 public class Board {
-    int[,] pieces;
-    Configuration configuration;
+    private int[,] pieces;
+    private Configuration configuration;
+	private event PieceEventEventHandler PieceRemoved;
+	private event PieceEventEventHandler PieceAdded;
 
-    public int Width { get { return configuration.BoardWidth; } }
+	public delegate void PieceEventEventHandler(Vector2Int position, int type);
+
+	public int Width { get { return configuration.BoardWidth; } }
     public int Height { get { return configuration.BoardHeight; } }
 
     public Board(Configuration configuration)
@@ -218,4 +222,14 @@ public class Board {
             }
         }
     }
+
+	public void SubscribeToRemoves(PieceEventEventHandler removeHandler)
+	{
+		PieceRemoved += removeHandler;
+	}
+
+	public void SubscribeToAdds(PieceEventEventHandler addHandler)
+	{
+		PieceAdded += addHandler;
+	}
 }
