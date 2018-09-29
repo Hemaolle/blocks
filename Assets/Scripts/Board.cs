@@ -4,15 +4,11 @@ using System.Text;
 using UnityEngine;
 
 public class Board {
+    // TODO these could be nullabale ints.
     private int[,] pieces;
     private Configuration configuration;
-	private event PieceEventEventHandler PieceRemoved;
-	private event PieceEventEventHandler PieceAdded;
-
-	public delegate void PieceEventEventHandler(Vector2Int position, int type);
-
-	public int Width { get { return configuration.BoardWidth; } }
-    public int Height { get { return configuration.BoardHeight; } }
+	private event EventHandler<BoardEventArgs> PieceRemoved;
+	private event EventHandler<BoardEventArgs> PieceAdded;	
 
     public Board(Configuration configuration)
     {
@@ -30,6 +26,9 @@ public class Board {
     {
         InitWith(b.configuration, b.ToString());
     }
+
+    public int Width { get { return configuration.BoardWidth; } }
+    public int Height { get { return configuration.BoardHeight; } }
 
     private void InitWith(Configuration configuration, string s)
     {
@@ -171,31 +170,46 @@ public class Board {
     public Dictionary<Vector2Int, int> GenerateReplacementPieces(List<Vector2Int> removed)
     {
         var result = new Dictionary<Vector2Int, int>();
-        int[] removedPiecesPerColumn = RemovedPiecesPerColumn(removed);
-        for (int column = 0; column < Width; column++)
+        int[] removedPiecesPerColumn = CountInColumns(removed);
+        for (int x = 0; x < Width; x++)
         {
-            for (int i = 0; i < removedPiecesPerColumn[column]; i++)
+            for (int i = 0; i < removedPiecesPerColumn[x]; i++)
             {
-                result.Add(new Vector2Int(column, -1 - i), RandomizePiece());
+                result.Add(new Vector2Int(x, ReplacementYCoordinate(i)), RandomizePiece());
             }
         }
         return result;
     }
 
-    private int[] RemovedPiecesPerColumn(List<Vector2Int> removed)
+    /// <summary>
+    /// Count for each column how many of the coordinates are in that column.
+    /// </summary>
+    /// <param name="coordinates">A list of coordinates</param>
+    /// <returns>Number of coordinates by column</returns>
+    private int[] CountInColumns(List<Vector2Int> coordinates)
     {
-        int[] removedPiecesPerColumn = new int[Width];
-        foreach (var r in removed)
+        int[] countInColumns = new int[Width];
+        foreach (var r in coordinates)
         {
-            removedPiecesPerColumn[r.x]++;
+            countInColumns[r.x]++;
         }
-        return removedPiecesPerColumn;
+        return countInColumns;
     }
 
+    /// <summary>
+    /// Remove pieces in the given coordinates on the board an place the given new pieces on the
+    /// board. When pieces are removed, the existing pieces "fall down" to fill the empty spaces
+    /// and the new pieces will be placed on top of the columns. Triggers events for the removal
+    /// of the old pieces and the addition of new pieces. Note that the coordinates for the add
+    /// events are on top of the board 
+    /// </summary>
+    /// <param name="removed"></param>
+    /// <param name="replacement"></param>
     public void ReplacePieces(List<Vector2Int> removed, Dictionary<Vector2Int, int> replacement)
     {
         foreach (var r in removed)
         {
+            OnPieceRemoved(new BoardEventArgs(new Vector2Int(r.x, r.y), pieces[r.x, r.y]));
             pieces[r.x, r.y] = int.MinValue;
         }
 
@@ -213,23 +227,46 @@ public class Board {
             }
         }
 
-        int[] removedPiecesPerColumn = RemovedPiecesPerColumn(removed);
-        for (int column = 0; column < Width; column++)
+        int[] removedPiecesPerColumn = CountInColumns(removed);
+        for (int x = 0; x < Width; x++)
         {
-            for (int i = 0; i < removedPiecesPerColumn[column]; i++)
+            for (int i = 0; i < removedPiecesPerColumn[x]; i++)
             {
-                pieces[column, i] = replacement[new Vector2Int(column, -1 - i)];
+                int replacementPieceType = replacement[new Vector2Int(x, ReplacementYCoordinate(i))];
+                pieces[x, i] = replacementPieceType;
+                OnPieceAdded(new BoardEventArgs(new Vector2Int(x, i), replacementPieceType));
             }
         }
     }
 
-	public void SubscribeToRemoves(PieceEventEventHandler removeHandler)
+    /// <summary>
+    /// Calculates the Y coordinate for the i:th replacement piece in a column. The replacement pieces will
+    /// appear on top of the column it is added to.
+    /// </summary>
+    /// <param name="i">The index of the replacement piece.</param>
+    /// <returns>The y coordinate for the replacement piece.</returns>
+    private int ReplacementYCoordinate(int i)
+    {
+        return i;
+    }
+
+	public void SubscribeToRemoves(EventHandler<BoardEventArgs> removeHandler)
 	{
 		PieceRemoved += removeHandler;
 	}
 
-	public void SubscribeToAdds(PieceEventEventHandler addHandler)
+    public void SubscribeToAdds(EventHandler<BoardEventArgs> addHandler)
 	{
 		PieceAdded += addHandler;
 	}
+
+    private void OnPieceRemoved(BoardEventArgs e)
+    {
+        PieceRemoved?.Invoke(this, e);
+    }
+
+    private void OnPieceAdded(BoardEventArgs e)
+    {
+        PieceAdded?.Invoke(this, e);
+    }
 }

@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.TestTools;
 using NUnit.Framework;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -158,11 +156,11 @@ public class BoardTests {
         ".....\n" +
         ".....",
 
-        ".....\n" +
-        ".....\n" +
-        ".....\n" +
+        "XXXXX\n" +
         "..X..\n" +
-        "XXXXX")]
+        ".....\n" +
+        ".....\n" +
+        ".....")]
     [TestCase(
         "XXXXX\n" +
         "X...X\n" +
@@ -170,11 +168,11 @@ public class BoardTests {
         "X.X.X\n" +
         "XXXXX",
 
-        "X...X\n" +
-        "X.X.X\n" +
-        "X.X.X\n" +
         "XXXXX\n" +
-        "XXXXX")]
+        "XXXXX\n" +
+        "X.X.X\n" +
+        "X.X.X\n" +
+        "X...X")]
     [TestCase(
         ".....\n" +
         "..X..\n" +
@@ -182,24 +180,18 @@ public class BoardTests {
         ".....\n" +
         ".....",
 
+        "..X..\n" +
         ".....\n" +
         ".....\n" +
         ".....\n" +
-        ".....\n" +
-        "..X..")]
+        ".....")]
     public void GenerateReplacementPieces(string removedS, string expectedS)
     {
         var b = new Board(FiveByFive());
         var removed = GetCharCoorinates(removedS, 'X');
         Dictionary<Vector2Int, int> replacement = b.GenerateReplacementPieces(removed);
-        IEnumerable<Vector2Int> expectedKeys = GetCharCoorinates(expectedS, 'X').Select(BoardCoordinatesToReplacementCoordinates);
+        IEnumerable<Vector2Int> expectedKeys = GetCharCoorinates(expectedS, 'X');
         Assert.That(replacement.Keys, Is.EquivalentTo(expectedKeys));
-    }
-
-    private Vector2Int BoardCoordinatesToReplacementCoordinates(Vector2Int c)
-    {
-        c.y -= 5;
-        return c;
     }
 
     [TestCase(
@@ -239,11 +231,11 @@ public class BoardTests {
         ".....\n" +
         ".....",
 
-        ".....\n" +
-        ".....\n" +
-        ".....\n" +
+        "33333\n" +
         "..3..\n" +
-        "33333",
+        ".....\n" +
+        ".....\n" +
+        ".....",
 
         "33333\n" +
         "00300\n" +
@@ -263,11 +255,11 @@ public class BoardTests {
         "X.X.X\n" +
         "XXXXX",
 
-        "3...3\n" +
-        "3.3.3\n" +
-        "3.3.3\n" +
         "33333\n" +
-        "33333",
+        "33333\n" +
+        "3.3.3\n" +
+        "3.3.3\n" +
+        "3...3",
 
         "33333\n" +
         "33333\n" +
@@ -287,11 +279,11 @@ public class BoardTests {
         ".....\n" +
         ".....",
 
+        "..3..\n" +
         ".....\n" +
         ".....\n" +
         ".....\n" +
-        ".....\n" +
-        "..3..",
+        ".....",
 
         "22322\n" +
         "20202\n" +
@@ -301,10 +293,21 @@ public class BoardTests {
     public void ReplacePieces(string layout, string removedS, string replacementS, string expected)
     {
         var b = new Board(FiveByFive(), layout);
+        // TODO: A separate test for events using the same test cases.
+        var addEventArgsReceived = new List<BoardEventArgs>();
+        b.SubscribeToAdds((o, e) => addEventArgsReceived.Add(e));
+        var removeEventArgsReceived = new List<BoardEventArgs>();
+        b.SubscribeToRemoves((o, e) => removeEventArgsReceived.Add(e));
         var removed = GetCharCoorinates(removedS, 'X');
-        var replacement = GetCharCoorinates(replacementS, '3').Select(BoardCoordinatesToReplacementCoordinates).ToDictionary(x => x, x => 3);
-        b.ReplacePieces(removed, replacement);
+        var replacementAllThrees = GetCharCoorinates(replacementS, '3')
+            .ToDictionary(x => x, x => 3);
+        b.ReplacePieces(removed, replacementAllThrees);
         Assert.That(b.ToString(), Is.EqualTo(expected));
+
+        // TODO: flip expected and actual
+        Assert.That(removed, Is.EquivalentTo(removeEventArgsReceived.Select(x => x.Coordinates)));
+        Assert.That(replacementAllThrees.Keys, Is.EquivalentTo(addEventArgsReceived.Select(x => x.Coordinates)));
+        Assert.That(addEventArgsReceived.All(x => x.PieceType == 3));
     }
 
     private List<Vector2Int> GetCharCoorinates(string s, char c)
