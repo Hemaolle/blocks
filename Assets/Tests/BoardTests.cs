@@ -304,12 +304,131 @@ public class BoardTests {
         b.ReplacePieces(removed, replacementAllThrees);
         Assert.That(b.ToString(), Is.EqualTo(expected));
 
-        // TODO: flip expected and actual
-        Assert.That(removed, Is.EquivalentTo(removeEventArgsReceived.Select(x => x.Coordinates)));
-        Assert.That(replacementAllThrees.Keys, Is.EquivalentTo(addEventArgsReceived.Select(x => x.Coordinates)));
+        Assert.That(removeEventArgsReceived.Select(x => x.Coordinates), Is.EquivalentTo(removed));
+        Assert.That(addEventArgsReceived.Select(x => x.Coordinates), Is.EquivalentTo(replacementAllThrees.Keys));
         Assert.That(addEventArgsReceived.All(x => x.PieceType == 3));        
         var removalsInColumns = Utilities.CountInColumns(removed, b.Width);
         Assert.That(addEventArgsReceived.All(x => x.AdditionsInSameColumn == removalsInColumns[x.Coordinates.x]));
+    }
+
+    [TestCase(
+        "10000\n" +
+        "10000\n" +
+        "10000\n" +
+        "10000\n" +
+        "10000",
+
+        "X....\n" +
+        "X....\n" +
+        "X....\n" +
+        "X....\n" +
+        "X....",
+
+        "3....\n" +
+        "3....\n" +
+        "3....\n" +
+        "3....\n" +
+        "3....",
+
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....",
+
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....")]
+    [TestCase(
+        "22222\n" +
+        "20102\n" +
+        "20212\n" +
+        "20212\n" +
+        "22222",
+
+        ".....\n" +
+        "..X..\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....",
+
+        "..3..\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....",
+
+        "..0..\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....",
+
+        ".....\n" +
+        "..0..\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....")]
+    [TestCase(
+        "00010\n" +
+        "01010\n" +
+        "01110\n" +
+        "01000\n" +
+        "01100",
+
+        "...X.\n" +
+        ".X.X.\n" +
+        ".XXX.\n" +
+        ".X...\n" +
+        ".X...",
+
+        ".333.\n" +
+        ".3.3.\n" +
+        ".3.3.\n" +
+        ".3...\n" +
+        ".....",
+
+        ".01..\n" +
+        "..2..\n" +
+        ".....\n" +
+        ".....\n" +
+        ".....",
+
+        ".....\n" +
+        "..1..\n" +
+        "..2..\n" +
+        ".....\n" +
+        ".0...")]
+    public void ReplacePieces_moved_pieces_events(string layout, string removedS, string replacementS,
+        string expectedFrom, string expectedTo)
+    {
+        var b = new Board(FiveByFive(), layout);
+        var moveEventArgsReceived = new List<PieceMovedEventArgs>();
+        b.SubscibeToMoves((o, e) => moveEventArgsReceived.Add(e));
+
+        var removed = GetCharCoorinates(removedS, 'X');
+        var replacementAllThrees = GetCharCoorinates(replacementS, '3')
+            .ToDictionary(x => x, x => 3);
+        b.ReplacePieces(removed, replacementAllThrees);
+
+        Assert.That(moveEventArgsReceived.ToDictionary(x => x.OldCoordinates, x => x.NewCoordinates),
+            Is.EquivalentTo(GetNumberCoordinates(expectedFrom, expectedTo)));
+    }
+
+    private Dictionary<Vector2Int, Vector2Int> GetNumberCoordinates(string s1, string s2)
+    {
+        var result = new Dictionary<Vector2Int, Vector2Int>();
+        for (int i = 0; i < 10; i++)
+        {
+            if (!s1.Contains(i.ToString()[0]))
+            {
+                break;
+            }
+            result.Add(GetCharCoorinates(s1, i.ToString()[0]).First(), GetCharCoorinates(s2, i.ToString()[0]).First());
+        }
+        return result;
     }
 
     private List<Vector2Int> GetCharCoorinates(string s, char c)

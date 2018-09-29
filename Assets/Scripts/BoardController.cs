@@ -9,7 +9,8 @@ public class BoardController : MonoBehaviour {
     public float pieceHeight;
     public int boardWidth;
     public int boardHeight;
-    public int colors;    
+    public int colors;
+    public float newPieceVelocity;
 
     private Board board;
     private Dictionary<Vector2Int, GameObject> pieces = new Dictionary<Vector2Int, GameObject>();
@@ -20,6 +21,7 @@ public class BoardController : MonoBehaviour {
         board = new Board(new Configuration(boardWidth, boardHeight, colors));
         board.SubscribeToAdds(PieceAdded);
         board.SubscribeToRemoves(PieceRemoved);
+        board.SubscibeToMoves(PieceMoved);
 
         boardCenter = new Vector2(boardWidth / 2 * pieceWidth, boardHeight / 2 * pieceHeight);
         bottom.position = transform.position + Vector3.down * (boardCenter.y + pieceHeight / 2);
@@ -39,10 +41,18 @@ public class BoardController : MonoBehaviour {
 
     void PieceAdded(object sender, PieceAddedEventArgs e)
     {
-        InstantiatePiece(e.Coordinates, NewPiecePosition(e.Coordinates.x, e.Coordinates.y - e.AdditionsInSameColumn), e.PieceType);
+        var p = InstantiatePiece(e.Coordinates, NewPiecePosition(e.Coordinates.x, e.Coordinates.y - e.AdditionsInSameColumn), e.PieceType);
+        p.GetComponent<Rigidbody2D>().velocity = new Vector3(0, -newPieceVelocity, 0);
     }
 
-    private void InstantiatePiece(Vector2Int boardCoordinates, Vector3 worldPosition, int pieceType)
+    void PieceMoved(object sender, PieceMovedEventArgs e)
+    {
+        pieces[e.OldCoordinates].GetComponent<PieceController>().SetCoordinates(e.NewCoordinates);
+        pieces.Add(e.NewCoordinates, pieces[e.OldCoordinates]);
+        pieces.Remove(e.OldCoordinates);        
+    }
+
+    private GameObject InstantiatePiece(Vector2Int boardCoordinates, Vector3 worldPosition, int pieceType)
     {
         GameObject newPiece = Instantiate(piecePrefabs[board.At(boardCoordinates.x, boardCoordinates.y)],
             worldPosition,
@@ -51,6 +61,7 @@ public class BoardController : MonoBehaviour {
         pc.SetBoard(board);
         pc.SetCoordinates(boardCoordinates);
         pieces.Add(boardCoordinates, newPiece);
+        return newPiece;
     }
 
     private Vector3 NewPiecePosition(int x, int y)

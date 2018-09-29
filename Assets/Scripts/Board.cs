@@ -4,11 +4,13 @@ using System.Text;
 using UnityEngine;
 
 public class Board {
+    private const int EMPTY_PIECE = int.MinValue;
     // TODO these could be nullabale ints.
     private int[,] pieces;
     private Configuration configuration;
 	private event EventHandler<PieceRemovedEventArgs> PieceRemoved;
-	private event EventHandler<PieceAddedEventArgs> PieceAdded;	
+	private event EventHandler<PieceAddedEventArgs> PieceAdded;
+	private event EventHandler<PieceMovedEventArgs> PieceMoved;
 
     public Board(Configuration configuration)
     {
@@ -113,8 +115,8 @@ public class Board {
     public List<Vector2Int> ConnectedPiecesCoords(int x, int y)
     {
         var copy = new Board(this);
-        copy.FloodFill(x, y, At(x,y), int.MinValue);
-        return copy.FindAll(int.MinValue);
+        copy.FloodFill(x, y, At(x,y), EMPTY_PIECE);
+        return copy.FindAll(EMPTY_PIECE);
     }
 
     private List<Vector2Int> FindAll(int value)
@@ -202,21 +204,23 @@ public class Board {
         foreach (var r in removed)
         {
             OnPieceRemoved(new PieceRemovedEventArgs(new Vector2Int(r.x, r.y)));
-            pieces[r.x, r.y] = int.MinValue;
+            pieces[r.x, r.y] = EMPTY_PIECE;
         }
 
-        outer:
-        for (int y = 0; y < Height - 1; y++)
+        for (int x = 0; x < Width; x++)
         {
-            for (int x = 0; x < Width; x++)
+            int? y;
+            do
             {
-                if (At(x, y) > int.MinValue && At(x, y + 1) == int.MinValue)
+                y = LowestPieceWithEmptyBelow(x);
+                if (y.HasValue)
                 {
-                    pieces[x, y + 1] = At(x, y);
-                    pieces[x, y] = int.MinValue;
-                    goto outer;
+                    int? newY = LowestEmptyPiece(x);
+                    OnPieceMoved(new PieceMovedEventArgs(new Vector2Int(x, y.Value), new Vector2Int(x, newY.Value)));
+                    pieces[x, newY.Value] = pieces[x, y.Value];
+                    pieces[x, y.Value] = EMPTY_PIECE;
                 }
-            }
+            } while (y.HasValue);
         }
 
         int[] removedPiecesPerColumn = Utilities.CountInColumns(removed, Width);
@@ -229,6 +233,43 @@ public class Board {
                 OnPieceAdded(new PieceAddedEventArgs(new Vector2Int(x, i), removedPiecesPerColumn[x], replacementPieceType));
             }
         }
+    }
+
+    private int? LowestPieceWithEmptyBelow(int x)
+    {
+        bool emptyFound = false;
+        for (int y = Height - 1; y > -1; y--)
+        {            
+            if (EmptyAt(x, y))
+            {
+                emptyFound = true;
+                continue;
+            }
+            
+            // Redundant empty check since we didn't continue but maybe better readability
+            if (emptyFound && !EmptyAt(x, y))
+            {
+                return y;
+            }
+        }
+        return null;
+    }
+
+    private int? LowestEmptyPiece(int x)
+    {
+        for (int y = Height - 1; y > -1; y--)
+        {
+            if (EmptyAt(x, y))
+            {
+                return y;
+            }
+        }
+        return null;
+    }
+
+    private bool EmptyAt(int x, int y)
+    {
+        return pieces[x, y] == EMPTY_PIECE;
     }
 
     /// <summary>
@@ -252,6 +293,12 @@ public class Board {
 		PieceAdded += addHandler;
 	}
 
+    public void SubscibeToMoves(EventHandler<PieceMovedEventArgs> moveHandler)
+    {
+        PieceMoved += moveHandler;
+    }
+
+
     private void OnPieceRemoved(PieceRemovedEventArgs e)
     {
         PieceRemoved?.Invoke(this, e);
@@ -260,5 +307,10 @@ public class Board {
     private void OnPieceAdded(PieceAddedEventArgs e)
     {
         PieceAdded?.Invoke(this, e);
+    }
+
+    private void OnPieceMoved(PieceMovedEventArgs e)
+    {
+        PieceMoved?.Invoke(this, e);
     }
 }
