@@ -20,7 +20,7 @@ public class BoardTests {
     [TestCase(4, 0, ExpectedResult = 5)]
     public int At_test_top_row(int x, int y)
     {
-        return GenerateBoardAndTakePieceAt(
+        return GenerateBoardAndReturnPieceAt(
             "12345\n" +
             "00000\n" +
             "00000\n" +
@@ -36,7 +36,7 @@ public class BoardTests {
     [TestCase(4, 4, ExpectedResult = 5)]
     public int At_test_bottom_row(int x, int y)
     {
-        return GenerateBoardAndTakePieceAt(
+        return GenerateBoardAndReturnPieceAt(
             "00000\n" +
             "00000\n" +
             "00000\n" +
@@ -52,7 +52,7 @@ public class BoardTests {
     [TestCase(0, 4, ExpectedResult = 5)]
     public int At_test_left_column(int x, int y)
     {
-        return GenerateBoardAndTakePieceAt(
+        return GenerateBoardAndReturnPieceAt(
             "10000\n" +
             "20000\n" +
             "30000\n" +
@@ -68,7 +68,7 @@ public class BoardTests {
     [TestCase(4, 4, ExpectedResult = 5)]
     public int At_test_right_column(int x, int y)
     {
-        return GenerateBoardAndTakePieceAt(
+        return GenerateBoardAndReturnPieceAt(
             "00001\n" +
             "00002\n" +
             "00003\n" +
@@ -329,7 +329,7 @@ public class BoardTests {
         return result;
     }
 
-    private static int GenerateBoardAndTakePieceAt(string layout, int x, int y)
+    private static int GenerateBoardAndReturnPieceAt(string layout, int x, int y)
     {        
         var b = new Board(FiveByFive(), layout);
         return b.At(x, y);
