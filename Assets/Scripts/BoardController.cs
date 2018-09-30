@@ -4,7 +4,6 @@ using UnityEngine;
 public class BoardController : MonoBehaviour {
     public GameObject[] piecePrefabs;
     public Transform boardParent;
-    public Transform bottom;
     public float pieceWidth;
     public float pieceHeight;
     public int boardWidth;
@@ -24,7 +23,6 @@ public class BoardController : MonoBehaviour {
         board.SubscibeToMoves(PieceMoved);
 
         Vector2 boardCenter = new Vector2(boardWidth / 2 * pieceWidth, boardHeight / 2 * pieceHeight);
-        bottom.position = transform.position + Vector3.down * (boardCenter.y + pieceHeight / 2);
         world = new World(pieceAcceleration, pieceWidth, pieceHeight, transform.position, boardCenter);
 
         for (int y = 0; y < board.Height; y++)
