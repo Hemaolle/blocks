@@ -11,6 +11,7 @@ public class PieceController : MonoBehaviour
     private Vector2Int boardPosition;
     private World world;
     private float velocity;
+    private bool clickable = true;
 
     public void SetBoard(Board b)
     {
@@ -29,7 +30,20 @@ public class PieceController : MonoBehaviour
 
     public void Select()
     {
-        board.SelectPiece(boardPosition);
+        if (clickable)
+        {
+            board.SelectPiece(boardPosition);
+        }
+     }
+
+    public bool IsMoving()
+    {
+        return velocity != 0;
+    }
+
+    public void SetClickable(bool clickable)
+    {
+        this.clickable = clickable;
     }
 
     private void Update()

@@ -27,7 +27,7 @@ public class BoardController : MonoBehaviour
 
     private World world;
     private Board board;
-    private Dictionary<Vector2Int, GameObject> pieces = new Dictionary<Vector2Int, GameObject>();
+    private Dictionary<Vector2Int, PieceController> pieces = new Dictionary<Vector2Int, PieceController>();
 
     // Use this for initialization
     private void Start()
@@ -49,10 +49,33 @@ public class BoardController : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        // TODO: Events would probably be nicer
+        bool anyPieceIsMoving = false;
+        foreach (var coordinatePiecePair in pieces)
+        {
+            if (coordinatePiecePair.Value.IsMoving())
+            {
+                anyPieceIsMoving = true;
+                break;
+            }
+        }
+        SetPiecesClickable(!anyPieceIsMoving);
+    }
+
     private void PieceRemoved(object sender, PieceRemovedEventArgs e)
     {
-        Destroy(pieces[e.Coordinates]);
+        Destroy(pieces[e.Coordinates].gameObject);
         pieces.Remove(e.Coordinates);
+    }
+
+    private void SetPiecesClickable(bool piecesClickable)
+    {
+        foreach (var coordinatePiecePair in pieces)
+        {
+            coordinatePiecePair.Value.SetClickable(piecesClickable);
+        }
     }
 
     private void PieceAdded(object sender, PieceAddedEventArgs e)
@@ -66,7 +89,7 @@ public class BoardController : MonoBehaviour
 
     private void PieceMoved(object sender, PieceMovedEventArgs e)
     {
-        pieces[e.OldCoordinates].GetComponent<PieceController>().SetBoardPosition(e.NewCoordinates);
+        pieces[e.OldCoordinates].SetBoardPosition(e.NewCoordinates);
         pieces.Add(e.NewCoordinates, pieces[e.OldCoordinates]);
         pieces.Remove(e.OldCoordinates);        
     }
@@ -82,7 +105,7 @@ public class BoardController : MonoBehaviour
         pc.SetBoard(board);
         pc.SetBoardPosition(boardCoordinates);
         pc.SetWorld(world);        
-        pieces.Add(boardCoordinates, newPiece);
+        pieces.Add(boardCoordinates, pc);
         return newPiece;
     }
 }
