@@ -8,14 +8,22 @@ using UnityEngine;
 
 public class BoardController : MonoBehaviour
 {
-    public GameObject[] piecePrefabs;
-    public Transform boardParent;
-    public float pieceWidth;
-    public float pieceHeight;
-    public int boardWidth;
-    public int boardHeight;
-    public int colors;
-    public float pieceAcceleration;
+    [SerializeField]
+    private GameObject[] piecePrefabs;
+    [SerializeField]
+    private Transform boardParent;
+    [SerializeField]
+    private float pieceWidth;
+    [SerializeField]
+    private float pieceHeight;
+    [SerializeField]
+    private int boardWidth;
+    [SerializeField]
+    private int boardHeight;
+    [SerializeField]
+    private int colors;
+    [SerializeField]
+    private float pieceAcceleration;
 
     private World world;
     private Board board;
