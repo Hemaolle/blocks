@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 
 public class Board {
-    private const int EMPTY_PIECE = int.MinValue;
+    private const int EmptyPiece = int.MinValue;
     // TODO these could be nullabale ints.
     private int[,] pieces;
     private Configuration configuration;
@@ -115,8 +115,8 @@ public class Board {
     public List<Vector2Int> ConnectedPiecesCoords(int x, int y)
     {
         var copy = new Board(this);
-        copy.FloodFill(x, y, At(x,y), EMPTY_PIECE);
-        return copy.FindAll(EMPTY_PIECE);
+        copy.FloodFill(x, y, At(x,y), EmptyPiece);
+        return copy.FindAll(EmptyPiece);
     }
 
     private List<Vector2Int> FindAll(int value)
@@ -204,7 +204,7 @@ public class Board {
         foreach (var r in removed)
         {
             OnPieceRemoved(new PieceRemovedEventArgs(new Vector2Int(r.x, r.y)));
-            pieces[r.x, r.y] = EMPTY_PIECE;
+            pieces[r.x, r.y] = EmptyPiece;
         }
 
         for (int x = 0; x < Width; x++)
@@ -218,7 +218,7 @@ public class Board {
                     int? newY = LowestEmptyPiece(x);
                     OnPieceMoved(new PieceMovedEventArgs(new Vector2Int(x, y.Value), new Vector2Int(x, newY.Value)));
                     pieces[x, newY.Value] = pieces[x, y.Value];
-                    pieces[x, y.Value] = EMPTY_PIECE;
+                    pieces[x, y.Value] = EmptyPiece;
                 }
             } while (y.HasValue);
         }
@@ -269,7 +269,7 @@ public class Board {
 
     private bool EmptyAt(int x, int y)
     {
-        return pieces[x, y] == EMPTY_PIECE;
+        return pieces[x, y] == EmptyPiece;
     }
 
     /// <summary>
