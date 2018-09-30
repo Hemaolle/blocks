@@ -10,16 +10,14 @@ using UnityEngine;
 
 public class Board
 {
-    private const int EmptyPiece = int.MinValue;
-
-    // TODO: Nullable ints could be nicer to represent empty spaces.
-    private int[,] pieces;
+    private int? EmptyPiece = null;
+    private int?[,] pieces;
     private Configuration configuration;
 
     public Board(Configuration configuration)
     {
         this.configuration = configuration;
-        pieces = new int[configuration.BoardWidth, configuration.BoardHeight];
+        pieces = new int?[configuration.BoardWidth, configuration.BoardHeight];
         FillWithRandomPieces();
     }
 
@@ -58,7 +56,8 @@ public class Board
 
     public int At(int x, int y)
     {
-        return pieces[x, y];
+        // The pieces will only ever be empty during internal calls.
+        return pieces[x, y].Value;
     }
 
     /// <summary>
@@ -126,7 +125,7 @@ public class Board
     private void InitWith(Configuration configuration, string s)
     {
         this.configuration = configuration;
-        pieces = new int[configuration.BoardWidth, configuration.BoardHeight];
+        pieces = new int?[configuration.BoardWidth, configuration.BoardHeight];
         FromString(s);
     }
 
@@ -156,7 +155,7 @@ public class Board
         return copy.FindAll(EmptyPiece);
     }
 
-    private List<Vector2Int> FindAll(int value)
+    private List<Vector2Int> FindAll(int? value)
     {
         return Reduce(
             new List<Vector2Int>(),
@@ -171,13 +170,13 @@ public class Board
             });
     } 
 
-    private T Reduce<T>(T accumulator, Func<T, int, int, int, T> reducer)
+    private T Reduce<T>(T accumulator, Func<T, int, int, int?, T> reducer)
     {
         for (int y = 0; y < Height; y++)
         {
             for (int x = 0; x < Width; x++)
             {
-                accumulator = reducer(accumulator, x, y, At(x, y));
+                accumulator = reducer(accumulator, x, y, pieces[x, y]);
             }
         }
 
@@ -185,7 +184,7 @@ public class Board
     }
 
     // From https://en.wikipedia.org/wiki/Flood_fill
-    private void FloodFill(int x, int y, int targetType, int replacementType)
+    private void FloodFill(int x, int y, int? targetType, int? replacementType)
     {
         if (x < 0 || x >= Width)
         {
@@ -202,7 +201,7 @@ public class Board
             return;
         }
 
-        if (At(x, y) != targetType)
+        if (pieces[x, y] != targetType)
         {
             return;
         }

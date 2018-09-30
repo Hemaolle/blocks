@@ -91,8 +91,8 @@ public class BoardSelectTests
 
         b.SelectPiece(selected);
 
-        // Skip asserting for moves if arguments empty. In some cases there are some many pieces moved that the single
-        // digit encoding of the test cases doesn't work.
+        // Skip asserting for moves if arguments empty. In some cases there are so many pieces moved that the single
+        // digit encoding of the test cases doesn't work and the movement tests are left out.
         if (!string.IsNullOrEmpty(c.ExpectedMovesFrom) && !string.IsNullOrEmpty(c.ExpectedMovesTo))
         {
             var moves = GetNumberCoordinates(c.ExpectedMovesFrom, c.ExpectedMovesTo);
