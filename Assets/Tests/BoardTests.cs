@@ -8,10 +8,11 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
-public class BoardTests {
-
+public class BoardTests
+{
     [Test]
-    public void ToString_result_remains_unchanged_after_ToString_FromString_chain() {
+    public void ToString_result_remains_unchanged_after_ToString_FromString_chain()
+    {
         var b = new Board(FiveBySix());
         var s = b.ToString();
         b.FromString(s);
@@ -431,8 +432,10 @@ public class BoardTests {
             {
                 break;
             }
+
             result.Add(GetCharCoorinates(s1, i.ToString()[0]).First(), GetCharCoorinates(s2, i.ToString()[0]).First());
         }
+
         return result;
     }
 
@@ -450,6 +453,7 @@ public class BoardTests {
                 }
             }
         }
+
         return result;
     }
 

@@ -8,7 +8,8 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class Board {
+public class Board
+{
     private const int EmptyPiece = int.MinValue;
     // TODO these could be nullabale ints.
     private int[,] pieces;
@@ -41,8 +42,15 @@ public class Board {
         ReplacePieces(piecesToRemove, replacementPieces);
     }
 
-    public int Width { get { return configuration.BoardWidth; } }
-    public int Height { get { return configuration.BoardHeight; } }
+    public int Width
+    {
+        get { return configuration.BoardWidth; }
+    }
+
+    public int Height
+    {
+        get { return configuration.BoardHeight; }
+    }
 
     private void InitWith(Configuration configuration, string s)
     {
@@ -87,6 +95,7 @@ public class Board {
             {
                 sb.Append('\n');
             }
+
             return sb;
         }).ToString();
     }
@@ -99,12 +108,14 @@ public class Board {
         {
             throw new System.ArgumentException("The number of the lines doesn't match the height of the board.");
         }
+
         for (int y = 0; y < lines.Length; y++)
         {
             if (lines[y].Length != Width)
             {
                 throw new System.ArgumentException("The length of a line doesn't match the width of the board.");
             }
+
             for (int x = 0; x < lines[y].Length; x++)
             {
                 // Picked char - '0' as the conversion here just because it would work for more than 10 different
@@ -132,11 +143,13 @@ public class Board {
             {
                 acc.Add(new Vector2Int(x, y));
             }
+
             return acc;
         });
     } 
 
-    private T Reduce<T>(T accumulator, Func<T, int, int, int, T> reducer) {
+    private T Reduce<T>(T accumulator, Func<T, int, int, int, T> reducer)
+    {
         for (int y = 0; y < Height; y++)
         {
             for (int x = 0; x < Width; x++)
@@ -144,6 +157,7 @@ public class Board {
                 accumulator = reducer(accumulator, x, y, At(x, y));
             }
         }
+
         return accumulator;
     }
 
@@ -154,18 +168,22 @@ public class Board {
         {
             return;
         }
+
         if (y < 0 || y >= Height)
         {
             return;
         }
+
         if (targetType == replacementType)
         {
             return;
         }
+
         if (At(x, y) != targetType)
         {
             return;
         }
+
         pieces[x, y] = replacementType;
 
         FloodFill(x, y + 1, targetType, replacementType);
@@ -192,6 +210,7 @@ public class Board {
                 result.Add(new Vector2Int(x, ReplacementYCoordinate(i)), RandomizePiece());
             }
         }
+
         return result;
     }
 
@@ -225,7 +244,8 @@ public class Board {
                     pieces[x, newY.Value] = pieces[x, y.Value];
                     pieces[x, y.Value] = EmptyPiece;
                 }
-            } while (y.HasValue);
+            }
+            while (y.HasValue);
         }
 
         int[] removedPiecesPerColumn = Utilities.CountInColumns(removed, Width);
@@ -257,6 +277,7 @@ public class Board {
                 return y;
             }
         }
+
         return null;
     }
 
@@ -269,6 +290,7 @@ public class Board {
                 return y;
             }
         }
+
         return null;
     }
 

@@ -6,7 +6,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoardController : MonoBehaviour {
+public class BoardController : MonoBehaviour
+{
     public GameObject[] piecePrefabs;
     public Transform boardParent;
     public float pieceWidth;
@@ -21,7 +22,8 @@ public class BoardController : MonoBehaviour {
     private Dictionary<Vector2Int, GameObject> pieces = new Dictionary<Vector2Int, GameObject>();
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         board = new Board(new Configuration(boardWidth, boardHeight, colors));
         board.SubscribeToAdds(PieceAdded);
         board.SubscribeToRemoves(PieceRemoved);
@@ -39,7 +41,8 @@ public class BoardController : MonoBehaviour {
         }
 	}
 
-    void PieceRemoved (object sender, PieceRemovedEventArgs e) {
+    void PieceRemoved (object sender, PieceRemovedEventArgs e)
+    {
         Destroy(pieces[e.Coordinates]);
         pieces.Remove(e.Coordinates);
 	}

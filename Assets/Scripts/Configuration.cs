@@ -6,16 +6,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Configuration {
+public class Configuration
+{
     public const int MIN_DIMENSION = 5;
     public const int MAX_DIMENSION = 20;
     public const int MIN_COLORS = 3;
     public const int MAX_COLORS = 6;
 
     private int boardWidth;
-    public int BoardWidth {
+    public int BoardWidth
+    {
         get { return boardWidth; }
-        set {
+        set
+        {
             ThrowIfDimensionInvalid(value);
             boardWidth = value;
         }
@@ -25,7 +28,8 @@ public class Configuration {
     public int BoardHeight
     {
         get { return boardHeight; }
-        set {
+        set
+        {
             ThrowIfDimensionInvalid(value);
             boardHeight = value;
         }
@@ -41,6 +45,7 @@ public class Configuration {
             numColors = value;
         }
     }
+
     public Dictionary<int, Material> PieceMaterials;
 
     // TODO: immutable?

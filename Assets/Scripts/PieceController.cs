@@ -5,7 +5,8 @@
 //-----------------------------------------------------------------------
 using UnityEngine;
 
-public class PieceController : MonoBehaviour {
+public class PieceController : MonoBehaviour
+{
     private Board board;
     private Vector2Int boardPosition;
     private World world;

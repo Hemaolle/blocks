@@ -21,6 +21,7 @@ public class Utilities : MonoBehaviour
         {
             countInColumns[r.x]++;
         }
+
         return countInColumns;
     }
 }
