@@ -1,4 +1,9 @@
-﻿using System;
+﻿//-----------------------------------------------------------------------
+// <copyright file="PieceMovedEventArgs.cs" company="Oskari Leppäaho">
+//      Copyright (c) Oskari Leppäaho. All Rights Reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+using System;
 using UnityEngine;
 
 public class PieceMovedEventArgs : EventArgs

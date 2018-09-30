@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿//-----------------------------------------------------------------------
+// <copyright file="BoardTests.cs" company="Oskari Leppäaho">
+//      Copyright (c) Oskari Leppäaho. All Rights Reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+using UnityEngine;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;

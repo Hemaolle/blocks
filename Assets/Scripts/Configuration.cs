@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿//-----------------------------------------------------------------------
+// <copyright file="Configuration.cs" company="Oskari Leppäaho">
+//      Copyright (c) Oskari Leppäaho. All Rights Reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Configuration {

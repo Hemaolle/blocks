@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿//-----------------------------------------------------------------------
+// <copyright file="World.cs" company="Oskari Leppäaho">
+//      Copyright (c) Oskari Leppäaho. All Rights Reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+using UnityEngine;
 
 public class World
 {

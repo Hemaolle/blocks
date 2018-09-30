@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿//-----------------------------------------------------------------------
+// <copyright file="PieceController.cs" company="Oskari Leppäaho">
+//      Copyright (c) Oskari Leppäaho. All Rights Reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+using UnityEngine;
 
 public class PieceController : MonoBehaviour {
     private Board board;

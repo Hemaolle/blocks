@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿//-----------------------------------------------------------------------
+// <copyright file="PieceRemovedEventArgs.cs" company="Oskari Leppäaho">
+//      Copyright (c) Oskari Leppäaho. All Rights Reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+using UnityEngine;
 using System;
 
 public class PieceRemovedEventArgs : EventArgs
