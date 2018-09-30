@@ -13,7 +13,7 @@ using System.Linq;
 public class BoardSelectTests
 {
     [Test, TestCaseSource(typeof(BoardSelectTestCaseData), "TestCases")]
-    public void SelectPiece_test_add_positions(BoardSelectTestCase c)
+    public static void SelectPiece_test_add_positions(BoardSelectTestCase c)
     {
         var cfg = BoardTests.FiveByFive();
         var b = new Board(cfg, c.Layout);
@@ -35,7 +35,7 @@ public class BoardSelectTests
     }
 
     [Test, TestCaseSource(typeof(BoardSelectTestCaseData), "TestCases")]
-    public void SelectPiece_test_add_piece_types(BoardSelectTestCase c)
+    public static void SelectPiece_test_add_piece_types(BoardSelectTestCase c)
     {
         var cfg = BoardTests.FiveByFive();
         var b = new Board(cfg, c.Layout);
@@ -46,7 +46,6 @@ public class BoardSelectTests
         var xsInSelected = GetCharCoorinates(c.Selected, 'X');
         Assert.That(xsInSelected.Count, Is.EqualTo(1));
         var selected = xsInSelected.First();
-        var adds = GetCharCoorinates(c.ExpectedAdds, 'X');
 
         b.SelectPiece(selected);
 
@@ -56,7 +55,7 @@ public class BoardSelectTests
     }
 
     [Test, TestCaseSource(typeof(BoardSelectTestCaseData), "TestCases")]
-    public void SelectPiece_test_removes(BoardSelectTestCase c)
+    public static void SelectPiece_test_removes(BoardSelectTestCase c)
     {
         var cfg = BoardTests.FiveByFive();
         var b = new Board(cfg, c.Layout);
@@ -78,7 +77,7 @@ public class BoardSelectTests
     }
 
     [Test, TestCaseSource(typeof(BoardSelectTestCaseData), "TestCases")]
-    public void SelectPiece_test_moves(BoardSelectTestCase c)
+    public static void SelectPiece_test_moves(BoardSelectTestCase c)
     {
         var cfg = BoardTests.FiveByFive();
         var b = new Board(cfg, c.Layout);
@@ -104,7 +103,7 @@ public class BoardSelectTests
         }
     }
 
-    private List<Tuple<Vector2Int, Vector2Int>> GetNumberCoordinates(string s1, string s2)
+    private static List<Tuple<Vector2Int, Vector2Int>> GetNumberCoordinates(string s1, string s2)
     {
         var result = new List<Tuple<Vector2Int, Vector2Int>>();
         for (int i = 0; i < 10; i++)
@@ -123,7 +122,7 @@ public class BoardSelectTests
         return result;
     }
 
-    private List<Vector2Int> GetCharCoorinates(string s, char c)
+    private static List<Vector2Int> GetCharCoorinates(string s, char c)
     {
         var result = new List<Vector2Int>();
         string[] lines = s.Split('\n');
