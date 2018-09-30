@@ -3,8 +3,8 @@
 //      Copyright (c) Oskari Leppäaho. All Rights Reserved.
 // </copyright>
 //-----------------------------------------------------------------------
-using UnityEngine;
 using System;
+using UnityEngine;
 
 public class PieceRemovedEventArgs : EventArgs
 {

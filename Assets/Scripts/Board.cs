@@ -67,18 +67,20 @@ public class Board
     /// <returns></returns>
     public override string ToString()
     {
-        return Reduce(new StringBuilder(), (sb, x, y, type) =>
-        {
-            sb.Append(pieces[x, y]);
-            bool lastColumn = x == Width - 1;
-            bool lastRow = y == Height - 1;
-            if (lastColumn && !lastRow)
+        return Reduce(
+            new StringBuilder(),
+            (sb, x, y, type) =>
             {
-                sb.Append('\n');
-            }
+                sb.Append(pieces[x, y]);
+                bool lastColumn = x == Width - 1;
+                bool lastRow = y == Height - 1;
+                if (lastColumn && !lastRow)
+                {
+                    sb.Append('\n');
+                }
 
-            return sb;
-        }).ToString();
+                return sb;
+            }).ToString();
     }
 
     public void FromString(string s)
@@ -150,21 +152,23 @@ public class Board
     private List<Vector2Int> ConnectedPiecesCoords(int x, int y)
     {
         var copy = new Board(this);
-        copy.FloodFill(x, y, At(x,y), EmptyPiece);
+        copy.FloodFill(x, y, At(x, y), EmptyPiece);
         return copy.FindAll(EmptyPiece);
     }
 
     private List<Vector2Int> FindAll(int value)
     {
-        return Reduce(new List<Vector2Int>(), (acc, x, y, type) =>
-        {
-            if (type == value)
+        return Reduce(
+            new List<Vector2Int>(),
+            (acc, x, y, type) =>
             {
-                acc.Add(new Vector2Int(x, y));
-            }
+                if (type == value)
+                {
+                    acc.Add(new Vector2Int(x, y));
+                }
 
-            return acc;
-        });
+                return acc;
+            });
     } 
 
     private T Reduce<T>(T accumulator, Func<T, int, int, int, T> reducer)
@@ -207,7 +211,7 @@ public class Board
 
         FloodFill(x, y + 1, targetType, replacementType);
         FloodFill(x, y - 1, targetType, replacementType);
-        FloodFill(x - 1, y , targetType, replacementType);
+        FloodFill(x - 1, y, targetType, replacementType);
         FloodFill(x + 1, y, targetType, replacementType);
         return;
     }

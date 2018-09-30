@@ -12,7 +12,6 @@ public class PieceController : MonoBehaviour
     private World world;
     private float velocity;
 
-
     public void SetBoard(Board b)
     {
         board = b;
@@ -41,7 +40,7 @@ public class PieceController : MonoBehaviour
         }
 
         velocity += Time.deltaTime * world.PieceAcceleration;
-        Vector3 newPosition = transform.position + Vector3.down * velocity;
+        Vector3 newPosition = transform.position + (Vector3.down * velocity);
         if (newPosition.y < BoardToWorldCoordinates().y)
         {
             transform.position = BoardToWorldCoordinates();

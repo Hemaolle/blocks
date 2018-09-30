@@ -33,7 +33,9 @@ public class World
 
     public Vector3 BoardToWorldCoordinates(Vector2Int boardCoordinates)
     {
-        return BoardPosition + new Vector3(boardCoordinates.x * PieceWidth - BoardCenter.x,
-            -boardCoordinates.y * PieceHeight + BoardCenter.y, 0);
+        return BoardPosition + new Vector3(
+            (boardCoordinates.x * PieceWidth) - BoardCenter.x,
+            (-boardCoordinates.y * PieceHeight) + BoardCenter.y,
+            0);
     }
 }

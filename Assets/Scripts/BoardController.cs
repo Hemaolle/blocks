@@ -30,7 +30,7 @@ public class BoardController : MonoBehaviour
     private Dictionary<Vector2Int, GameObject> pieces = new Dictionary<Vector2Int, GameObject>();
 
     // Use this for initialization
-    void Start ()
+    private void Start()
     {
         board = new Board(new Configuration(boardWidth, boardHeight, colors));
         board.SubscribeToAdds(PieceAdded);
@@ -49,18 +49,18 @@ public class BoardController : MonoBehaviour
         }
     }
 
-    void PieceRemoved (object sender, PieceRemovedEventArgs e)
+    private void PieceRemoved(object sender, PieceRemovedEventArgs e)
     {
         Destroy(pieces[e.Coordinates]);
         pieces.Remove(e.Coordinates);
     }
 
-    void PieceAdded(object sender, PieceAddedEventArgs e)
+    private void PieceAdded(object sender, PieceAddedEventArgs e)
     {
         InstantiatePiece(e.Coordinates, world.BoardToWorldCoordinates(new Vector2Int(e.Coordinates.x, e.Coordinates.y - e.AdditionsInSameColumn)), e.PieceType);
     }
 
-    void PieceMoved(object sender, PieceMovedEventArgs e)
+    private void PieceMoved(object sender, PieceMovedEventArgs e)
     {
         pieces[e.OldCoordinates].GetComponent<PieceController>().SetBoardPosition(e.NewCoordinates);
         pieces.Add(e.NewCoordinates, pieces[e.OldCoordinates]);
@@ -69,9 +69,11 @@ public class BoardController : MonoBehaviour
 
     private GameObject InstantiatePiece(Vector2Int boardCoordinates, Vector3 worldPosition, int pieceType)
     {
-        GameObject newPiece = Instantiate(piecePrefabs[board.At(boardCoordinates.x, boardCoordinates.y)],
+        GameObject newPiece = Instantiate(
+            piecePrefabs[board.At(boardCoordinates.x, boardCoordinates.y)],
             worldPosition,
-            Quaternion.identity, boardParent);
+            Quaternion.identity,
+            boardParent);
         var pc = newPiece.GetComponent<PieceController>();
         pc.SetBoard(board);
         pc.SetBoardPosition(boardCoordinates);

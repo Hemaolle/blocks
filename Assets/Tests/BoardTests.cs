@@ -17,6 +17,7 @@ public class BoardTests
     {
         return new Configuration(5, 5, 6);
     }
+
     [Test]
     public static void ToString_result_remains_unchanged_after_ToString_FromString_chain()
     {
@@ -39,7 +40,8 @@ public class BoardTests
             "00000\n" +
             "00000\n" +
             "00000",
-            x, y);
+            x,
+            y);
     }
 
     [TestCase(0, 4, ExpectedResult = 1)]
@@ -55,7 +57,8 @@ public class BoardTests
             "00000\n" +
             "00000\n" +
             "12345",
-            x, y);
+            x,
+            y);
     }
 
     [TestCase(0, 0, ExpectedResult = 1)]
@@ -71,7 +74,8 @@ public class BoardTests
             "30000\n" +
             "40000\n" +
             "50000",
-            x, y);
+            x,
+            y);
     }
 
     [TestCase(4, 0, ExpectedResult = 1)]
@@ -87,7 +91,8 @@ public class BoardTests
             "00003\n" +
             "00004\n" +
             "00005",
-            x, y);
+            x,
+            y);
     }
 
     private static int GenerateBoardAndReturnPieceAt(string layout, int x, int y)
@@ -96,4 +101,3 @@ public class BoardTests
         return b.At(x, y);
     }
 }
-

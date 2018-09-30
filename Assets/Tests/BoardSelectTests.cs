@@ -3,11 +3,11 @@
 //      Copyright (c) Oskari Leppäaho. All Rights Reserved.
 // </copyright>
 //-----------------------------------------------------------------------
-using UnityEngine;
-using NUnit.Framework;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using UnityEngine;
 
 [TestFixture]
 public class BoardSelectTests
@@ -96,7 +96,8 @@ public class BoardSelectTests
         // digit encoding of the test cases doesn't work.
         if (!string.IsNullOrEmpty(c.ExpectedMovesFrom) && !string.IsNullOrEmpty(c.ExpectedMovesTo))
         {
-            Assert.That(moveEventArgsReceived
+            Assert.That(
+                moveEventArgsReceived
                 .Select(x => new Tuple<Vector2Int, Vector2Int>(x.OldCoordinates, x.NewCoordinates)),
                 Is.EquivalentTo(moves),
                 "Received move events not matching expected");
