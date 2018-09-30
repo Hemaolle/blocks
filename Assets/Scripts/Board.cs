@@ -10,7 +10,7 @@ using UnityEngine;
 
 public class Board
 {
-    private int? EmptyPiece = null;
+    private int? emptyPiece = null;
     private int?[,] pieces;
     private Configuration configuration;
 
@@ -122,6 +122,37 @@ public class Board
         PieceMoved += moveHandler;
     }
 
+    /// <summary>
+    /// Count for each column how many of the coordinates are in that column.
+    /// </summary>
+    /// <param name="coordinates">A list of coordinates</param>
+    /// <param name="coordinates">The number of columns</param>
+    /// <returns>Number of coordinates by column</returns>
+    private static int[] CountInColumns(IEnumerable<Vector2Int> coordinates, int columns)
+    {
+        int[] countInColumns = new int[columns];
+        foreach (var r in coordinates)
+        {
+            countInColumns[r.x]++;
+        }
+
+        return countInColumns;
+    }
+
+    /// <summary>
+    /// The Y coordinate for the i:th replacement piece in a column. The replacement pieces will
+    /// appear on top of the column it is added to.
+    /// 
+    /// This method may look a bit silly as it is only identity, but we're sort of converting
+    /// from index in the list of added pieces to a Y coordinate.
+    /// </summary>
+    /// <param name="i">The index of the replacement piece.</param>
+    /// <returns>The y coordinate for the replacement piece.</returns>
+    private static int ReplacementYCoordinate(int i)
+    {
+        return i;
+    }
+
     private void InitWith(Configuration configuration, string s)
     {
         this.configuration = configuration;
@@ -151,8 +182,8 @@ public class Board
     private List<Vector2Int> ConnectedPiecesCoords(int x, int y)
     {
         var copy = new Board(this);
-        copy.FloodFill(x, y, At(x, y), EmptyPiece);
-        return copy.FindAll(EmptyPiece);
+        copy.FloodFill(x, y, At(x, y), emptyPiece);
+        return copy.FindAll(emptyPiece);
     }
 
     private List<Vector2Int> FindAll(int? value)
@@ -225,7 +256,7 @@ public class Board
     private Dictionary<Vector2Int, int> GenerateReplacementPieces(List<Vector2Int> removed)
     {
         var result = new Dictionary<Vector2Int, int>();
-        int[] removedPiecesPerColumn = Utilities.CountInColumns(removed, Width);
+        int[] removedPiecesPerColumn = CountInColumns(removed, Width);
         for (int x = 0; x < Width; x++)
         {
             for (int i = 0; i < removedPiecesPerColumn[x]; i++)
@@ -257,7 +288,7 @@ public class Board
         foreach (var r in removed)
         {
             OnPieceRemoved(new PieceRemovedEventArgs(new Vector2Int(r.x, r.y)));
-            pieces[r.x, r.y] = EmptyPiece;
+            pieces[r.x, r.y] = emptyPiece;
         }
     }
 
@@ -274,7 +305,7 @@ public class Board
                     int? newY = LowestEmptyPiece(x);
                     OnPieceMoved(new PieceMovedEventArgs(new Vector2Int(x, y.Value), new Vector2Int(x, newY.Value)));
                     pieces[x, newY.Value] = pieces[x, y.Value];
-                    pieces[x, y.Value] = EmptyPiece;
+                    pieces[x, y.Value] = emptyPiece;
                 }
             }
             while (y.HasValue);
@@ -283,7 +314,7 @@ public class Board
 
     private void PlaceNewPieces(Dictionary<Vector2Int, int> replacement)
     {
-        int[] newPiecesPerColumn = Utilities.CountInColumns(replacement.Keys, Width);
+        int[] newPiecesPerColumn = CountInColumns(replacement.Keys, Width);
         for (int x = 0; x < Width; x++)
         {
             for (int i = 0; i < newPiecesPerColumn[x]; i++)
@@ -331,21 +362,7 @@ public class Board
 
     private bool IsEmpty(int x, int y)
     {
-        return pieces[x, y] == EmptyPiece;
-    }
-
-    /// <summary>
-    /// The Y coordinate for the i:th replacement piece in a column. The replacement pieces will
-    /// appear on top of the column it is added to.
-    /// 
-    /// This method may look a bit silly as it is only identity, but we're sort of converting
-    /// from index in the list of added pieces to a Y coordinate.
-    /// </summary>
-    /// <param name="i">The index of the replacement piece.</param>
-    /// <returns>The y coordinate for the replacement piece.</returns>
-    private int ReplacementYCoordinate(int i)
-    {
-        return i;
+        return pieces[x, y] == emptyPiece;
     }
 
     private void OnPieceRemoved(PieceRemovedEventArgs e)

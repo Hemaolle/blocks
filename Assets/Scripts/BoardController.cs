@@ -61,6 +61,7 @@ public class BoardController : MonoBehaviour
                 break;
             }
         }
+
         SetPiecesClickable(!anyPieceIsMoving);
     }
 
