@@ -57,7 +57,11 @@ public class BoardController : MonoBehaviour
 
     private void PieceAdded(object sender, PieceAddedEventArgs e)
     {
-        InstantiatePiece(e.Coordinates, world.BoardToWorldCoordinates(new Vector2Int(e.Coordinates.x, e.Coordinates.y - e.AdditionsInSameColumn)), e.PieceType);
+        InstantiatePiece(
+            e.Coordinates,
+            world.BoardToWorldCoordinates(
+                new Vector2Int(e.Coordinates.x, e.Coordinates.y - e.AdditionsInSameColumn)),
+                e.PieceType);
     }
 
     private void PieceMoved(object sender, PieceMovedEventArgs e)

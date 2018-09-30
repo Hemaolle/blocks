@@ -10,7 +10,6 @@ public class Configuration
     public const int MinColors = 3;
     public const int MaxColors = 6;
 
-    // TODO: immutable?
     public Configuration(int boardWidth, int boardHeight, int numColors)
     {
         ThrowIfDimensionInvalid(boardWidth);
@@ -21,50 +20,9 @@ public class Configuration
         NumColors = numColors;
     }
 
-    private int boardWidth;
-    public int BoardWidth
-    {
-        get
-        {
-            return boardWidth;
-        }
-
-        set
-        {
-            ThrowIfDimensionInvalid(value);
-            boardWidth = value;
-        }
-    }
-
-    private int boardHeight;
-    public int BoardHeight
-    {
-        get
-        {
-            return boardHeight;
-        }
-
-        set
-        {
-            ThrowIfDimensionInvalid(value);
-            boardHeight = value;
-        }
-    }
-
-    private int numColors;
-    public int NumColors
-    {
-        get
-        {
-            return numColors;
-        }
-
-        set
-        {
-            ThrowIfNumColorsInvalid(value);
-            numColors = value;
-        }
-    }
+    public int BoardWidth { get; }
+    public int BoardHeight { get; }
+    public int NumColors { get; }
 
     private void ThrowIfDimensionInvalid(int dimension)
     {

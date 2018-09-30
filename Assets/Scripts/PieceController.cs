@@ -34,14 +34,16 @@ public class PieceController : MonoBehaviour
 
     private void Update()
     {
-        if (transform.position == BoardToWorldCoordinates())
+        bool inMyPlace = transform.position == BoardToWorldCoordinates();
+        if (inMyPlace)
         {
             return;
         }
 
         velocity += Time.deltaTime * world.PieceAcceleration;
         Vector3 newPosition = transform.position + (Vector3.down * velocity);
-        if (newPosition.y < BoardToWorldCoordinates().y)
+        bool newPositionIsPastMyPlace = newPosition.y < BoardToWorldCoordinates().y;
+        if (newPositionIsPastMyPlace)
         {
             transform.position = BoardToWorldCoordinates();
             velocity = 0;
