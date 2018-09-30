@@ -11,6 +11,7 @@ using UnityEngine;
 public class Board
 {
     private const int EmptyPiece = int.MinValue;
+
     // TODO these could be nullabale ints.
     private int[,] pieces;
     private Configuration configuration;

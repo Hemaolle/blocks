@@ -298,18 +298,21 @@ public class BoardTests
         "22222")]
     public void ReplacePieces(string layout, string removedS, string replacementS, string expected)
     {
-        var b = new Board(FiveByFive(), layout);
         // TODO: A separate test for events using the same test cases.
+        var b = new Board(FiveByFive(), layout);
+
         var addEventArgsReceived = new List<PieceAddedEventArgs>();
         b.SubscribeToAdds((o, e) => addEventArgsReceived.Add(e));
         var removeEventArgsReceived = new List<PieceRemovedEventArgs>();
         b.SubscribeToRemoves((o, e) => removeEventArgsReceived.Add(e));
+
         var removed = GetCharCoorinates(removedS, 'X');
         var replacementAllThrees = GetCharCoorinates(replacementS, '3')
             .ToDictionary(x => x, x => 3);
-        b.ReplacePieces(removed, replacementAllThrees);
-        Assert.That(b.ToString(), Is.EqualTo(expected));
 
+        b.ReplacePieces(removed, replacementAllThrees);
+
+        Assert.That(b.ToString(), Is.EqualTo(expected));
         Assert.That(removeEventArgsReceived.Select(x => x.Coordinates), Is.EquivalentTo(removed));
         Assert.That(addEventArgsReceived.Select(x => x.Coordinates), Is.EquivalentTo(replacementAllThrees.Keys));
         Assert.That(addEventArgsReceived.All(x => x.PieceType == 3));        
