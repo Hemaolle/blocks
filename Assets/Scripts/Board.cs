@@ -132,7 +132,7 @@ public class Board
     /// <summary>
     /// Return a list of coordinates for all the pieces that are four-way connected to the given coordinates
     /// </summary>
-    public List<Vector2Int> ConnectedPiecesCoords(int x, int y)
+    private List<Vector2Int> ConnectedPiecesCoords(int x, int y)
     {
         var copy = new Board(this);
         copy.FloodFill(x, y, At(x,y), EmptyPiece);
@@ -203,7 +203,7 @@ public class Board
     /// <param name="removed">Coordinates of removed pieces for which to generate replacement pieces</param>
     /// <returns>A dictionary of coordinates and piece types for the new pieces. Keys are coordinates such that the
     /// new pieces are placed on top of the board for dropping on the board.</returns>
-    public Dictionary<Vector2Int, int> GenerateReplacementPieces(List<Vector2Int> removed)
+    private Dictionary<Vector2Int, int> GenerateReplacementPieces(List<Vector2Int> removed)
     {
         var result = new Dictionary<Vector2Int, int>();
         int[] removedPiecesPerColumn = Utilities.CountInColumns(removed, Width);
@@ -227,7 +227,7 @@ public class Board
     /// </summary>
     /// <param name="removed"></param>
     /// <param name="replacement"></param>
-    public void ReplacePieces(List<Vector2Int> removed, Dictionary<Vector2Int, int> replacement)
+    private void ReplacePieces(List<Vector2Int> removed, Dictionary<Vector2Int, int> replacement)
     {
         foreach (var r in removed)
         {
