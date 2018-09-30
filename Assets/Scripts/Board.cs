@@ -16,12 +16,6 @@ public class Board
     private int[,] pieces;
     private Configuration configuration;
 
-    private event EventHandler<PieceRemovedEventArgs> PieceRemoved;
-
-    private event EventHandler<PieceAddedEventArgs> PieceAdded;
-
-    private event EventHandler<PieceMovedEventArgs> PieceMoved;
-
     public Board(Configuration configuration)
     {
         this.configuration = configuration;
@@ -39,12 +33,11 @@ public class Board
         InitWith(b.configuration, b.ToString());
     }
 
-    public void SelectPiece(Vector2Int coordinates)
-    {
-        List<Vector2Int> piecesToRemove = ConnectedPiecesCoords(coordinates.x, coordinates.y);
-        Dictionary<Vector2Int, int> replacementPieces = GenerateReplacementPieces(piecesToRemove);
-        ReplacePieces(piecesToRemove, replacementPieces);
-    }
+    private event EventHandler<PieceRemovedEventArgs> PieceRemoved;
+
+    private event EventHandler<PieceAddedEventArgs> PieceAdded;
+
+    private event EventHandler<PieceMovedEventArgs> PieceMoved;
 
     public int Width
     {
@@ -56,27 +49,11 @@ public class Board
         get { return configuration.BoardHeight; }
     }
 
-    private void InitWith(Configuration configuration, string s)
+    public void SelectPiece(Vector2Int coordinates)
     {
-        this.configuration = configuration;
-        pieces = new int[configuration.BoardWidth, configuration.BoardHeight];
-        FromString(s);
-    }
-
-    private void FillWithRandomPieces()
-    {
-        for (int y = 0; y < configuration.BoardHeight; y++)
-        {
-            for (int x = 0; x < configuration.BoardWidth; x++)
-            {
-                pieces[x, y] = RandomizePiece();
-            }
-        }
-    }
-
-    private int RandomizePiece()
-    {
-        return UnityEngine.Random.Range(0, configuration.NumColors);
+        List<Vector2Int> piecesToRemove = ConnectedPiecesCoords(coordinates.x, coordinates.y);
+        Dictionary<Vector2Int, int> replacementPieces = GenerateReplacementPieces(piecesToRemove);
+        ReplacePieces(piecesToRemove, replacementPieces);
     }
 
     public int At(int x, int y)
@@ -85,7 +62,7 @@ public class Board
     }
 
     /// <summary>
-    /// Line y = 0 is the topmost one.
+    /// Line y = 0 is the topmost one in the string representation.
     /// </summary>
     /// <returns></returns>
     public override string ToString()
@@ -127,6 +104,44 @@ public class Board
                 pieces[x, y] = (int)(lines[y][x] - '0');
             }
         }
+    }
+
+    public void SubscribeToRemoves(EventHandler<PieceRemovedEventArgs> removeHandler)
+    {
+        PieceRemoved += removeHandler;
+    }
+
+    public void SubscribeToAdds(EventHandler<PieceAddedEventArgs> addHandler)
+    {
+        PieceAdded += addHandler;
+    }
+
+    public void SubscibeToMoves(EventHandler<PieceMovedEventArgs> moveHandler)
+    {
+        PieceMoved += moveHandler;
+    }
+
+    private void InitWith(Configuration configuration, string s)
+    {
+        this.configuration = configuration;
+        pieces = new int[configuration.BoardWidth, configuration.BoardHeight];
+        FromString(s);
+    }
+
+    private void FillWithRandomPieces()
+    {
+        for (int y = 0; y < configuration.BoardHeight; y++)
+        {
+            for (int x = 0; x < configuration.BoardWidth; x++)
+            {
+                pieces[x, y] = RandomizePiece();
+            }
+        }
+    }
+
+    private int RandomizePiece()
+    {
+        return UnityEngine.Random.Range(0, configuration.NumColors);
     }
 
     /// <summary>
@@ -313,22 +328,6 @@ public class Board
     {
         return i;
     }
-
-    public void SubscribeToRemoves(EventHandler<PieceRemovedEventArgs> removeHandler)
-    {
-        PieceRemoved += removeHandler;
-    }
-
-    public void SubscribeToAdds(EventHandler<PieceAddedEventArgs> addHandler)
-    {
-        PieceAdded += addHandler;
-    }
-
-    public void SubscibeToMoves(EventHandler<PieceMovedEventArgs> moveHandler)
-    {
-        PieceMoved += moveHandler;
-    }
-
 
     private void OnPieceRemoved(PieceRemovedEventArgs e)
     {
