@@ -21,8 +21,8 @@ public class BoardController : MonoBehaviour
     private Board board;
     private Dictionary<Vector2Int, GameObject> pieces = new Dictionary<Vector2Int, GameObject>();
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
     {
         board = new Board(new Configuration(boardWidth, boardHeight, colors));
         board.SubscribeToAdds(PieceAdded);
@@ -39,13 +39,13 @@ public class BoardController : MonoBehaviour
                 InstantiatePiece(new Vector2Int(x, y), world.BoardToWorldCoordinates(new Vector2Int(x, y)), board.At(x, y));
             }
         }
-	}
+    }
 
     void PieceRemoved (object sender, PieceRemovedEventArgs e)
     {
         Destroy(pieces[e.Coordinates]);
         pieces.Remove(e.Coordinates);
-	}
+    }
 
     void PieceAdded(object sender, PieceAddedEventArgs e)
     {

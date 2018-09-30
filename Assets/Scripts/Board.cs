@@ -16,11 +16,11 @@ public class Board
     private int[,] pieces;
     private Configuration configuration;
 
-	private event EventHandler<PieceRemovedEventArgs> PieceRemoved;
+    private event EventHandler<PieceRemovedEventArgs> PieceRemoved;
 
-	private event EventHandler<PieceAddedEventArgs> PieceAdded;
+    private event EventHandler<PieceAddedEventArgs> PieceAdded;
 
-	private event EventHandler<PieceMovedEventArgs> PieceMoved;
+    private event EventHandler<PieceMovedEventArgs> PieceMoved;
 
     public Board(Configuration configuration)
     {
@@ -314,15 +314,15 @@ public class Board
         return i;
     }
 
-	public void SubscribeToRemoves(EventHandler<PieceRemovedEventArgs> removeHandler)
-	{
-		PieceRemoved += removeHandler;
-	}
+    public void SubscribeToRemoves(EventHandler<PieceRemovedEventArgs> removeHandler)
+    {
+        PieceRemoved += removeHandler;
+    }
 
     public void SubscribeToAdds(EventHandler<PieceAddedEventArgs> addHandler)
-	{
-		PieceAdded += addHandler;
-	}
+    {
+        PieceAdded += addHandler;
+    }
 
     public void SubscibeToMoves(EventHandler<PieceMovedEventArgs> moveHandler)
     {
