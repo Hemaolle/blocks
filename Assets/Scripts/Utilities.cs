@@ -14,7 +14,7 @@ public class Utilities : MonoBehaviour
     /// <param name="coordinates">A list of coordinates</param>
     /// <param name="coordinates">The number of columns</param>
     /// <returns>Number of coordinates by column</returns>
-    public static int[] CountInColumns(List<Vector2Int> coordinates, int columns)
+    public static int[] CountInColumns(IEnumerable<Vector2Int> coordinates, int columns)
     {
         int[] countInColumns = new int[columns];
         foreach (var r in coordinates)

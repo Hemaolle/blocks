@@ -244,16 +244,26 @@ public class Board
     /// and the new pieces will be placed on top of the columns. Triggers events for the removal
     /// of the old pieces, addition of new pieces and movement of existing pieces.
     /// </summary>
-    /// <param name="removed">Coordinates of removed pieces</param>
-    /// <param name="replacement">Coordinates and types of the new pieces</param>
-    private void ReplacePieces(List<Vector2Int> removed, Dictionary<Vector2Int, int> replacement)
+    /// <param name="piecesToRemove">Coordinates of pieces to remove</param>
+    /// <param name="newPieces">Coordinates and types of the new pieces</param>
+    private void ReplacePieces(List<Vector2Int> piecesToRemove, Dictionary<Vector2Int, int> newPieces)
+    {
+        RemovePieces(piecesToRemove);
+        MovePiecesDownToFillEmptySpaces();
+        PlaceNewPieces(newPieces);
+    }
+
+    private void RemovePieces(List<Vector2Int> removed)
     {
         foreach (var r in removed)
         {
             OnPieceRemoved(new PieceRemovedEventArgs(new Vector2Int(r.x, r.y)));
             pieces[r.x, r.y] = EmptyPiece;
         }
+    }
 
+    private void MovePiecesDownToFillEmptySpaces()
+    {
         for (int x = 0; x < Width; x++)
         {
             int? y;
@@ -270,15 +280,18 @@ public class Board
             }
             while (y.HasValue);
         }
+    }
 
-        int[] removedPiecesPerColumn = Utilities.CountInColumns(removed, Width);
+    private void PlaceNewPieces(Dictionary<Vector2Int, int> replacement)
+    {
+        int[] newPiecesPerColumn = Utilities.CountInColumns(replacement.Keys, Width);
         for (int x = 0; x < Width; x++)
         {
-            for (int i = 0; i < removedPiecesPerColumn[x]; i++)
+            for (int i = 0; i < newPiecesPerColumn[x]; i++)
             {
                 int replacementPieceType = replacement[new Vector2Int(x, ReplacementYCoordinate(i))];
                 pieces[x, i] = replacementPieceType;
-                OnPieceAdded(new PieceAddedEventArgs(new Vector2Int(x, i), removedPiecesPerColumn[x], replacementPieceType));
+                OnPieceAdded(new PieceAddedEventArgs(new Vector2Int(x, i), newPiecesPerColumn[x], replacementPieceType));
             }
         }
     }
