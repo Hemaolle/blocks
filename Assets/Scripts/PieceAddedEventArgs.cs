@@ -16,6 +16,8 @@ public class PieceAddedEventArgs : EventArgs
     }
 
     public Vector2Int Coordinates { get; }
+
     public int AdditionsInSameColumn { get; }
+
     public int PieceType { get; }
 }

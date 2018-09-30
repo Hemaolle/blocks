@@ -22,9 +22,13 @@ public class World
     }
 
     public float PieceAcceleration { get; }
+
     public float PieceWidth { get; }
+
     public float PieceHeight { get; }
+
     public Vector3 BoardPosition { get; }
+
     public Vector2 BoardCenter { get; }
 
     public Vector3 BoardToWorldCoordinates(Vector2Int boardCoordinates)

@@ -15,8 +15,11 @@ public class Board
     // TODO these could be nullabale ints.
     private int[,] pieces;
     private Configuration configuration;
+
 	private event EventHandler<PieceRemovedEventArgs> PieceRemoved;
+
 	private event EventHandler<PieceAddedEventArgs> PieceAdded;
+
 	private event EventHandler<PieceMovedEventArgs> PieceMoved;
 
     public Board(Configuration configuration)

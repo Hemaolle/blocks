@@ -14,6 +14,7 @@ public class Configuration
     public const int MAX_COLORS = 6;
 
     private int boardWidth;
+
     public int BoardWidth
     {
         get { return boardWidth; }
@@ -25,6 +26,7 @@ public class Configuration
     }
 
     private int boardHeight;
+
     public int BoardHeight
     {
         get { return boardHeight; }
@@ -36,6 +38,7 @@ public class Configuration
     }
 
     private int numColors;
+
     public int NumColors
     {
         get { return numColors; }

@@ -15,5 +15,6 @@ public class PieceMovedEventArgs : EventArgs
     }
 
     public Vector2Int OldCoordinates { get; }
+
     public Vector2Int NewCoordinates { get; }
 }
