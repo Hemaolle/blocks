@@ -3,9 +3,6 @@
 //      Copyright (c) Oskari Leppäaho. All Rights Reserved.
 // </copyright>
 //-----------------------------------------------------------------------
-using System.Collections.Generic;
-using UnityEngine;
-
 public class Configuration
 {
     public const int MIN_DIMENSION = 5;
@@ -48,8 +45,6 @@ public class Configuration
             numColors = value;
         }
     }
-
-    public Dictionary<int, Material> PieceMaterials;
 
     // TODO: immutable?
     public Configuration(int boardWidth, int boardHeight, int numColors)
