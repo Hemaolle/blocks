@@ -12,7 +12,7 @@ public class Board
 {
     private const int EmptyPiece = int.MinValue;
 
-    // TODO these could be nullabale ints.
+    // TODO: Nullable ints could be nicer to represent empty spaces.
     private int[,] pieces;
     private Configuration configuration;
 
@@ -220,8 +220,9 @@ public class Board
     /// Generate replacement pieces.
     /// </summary>
     /// <param name="removed">Coordinates of removed pieces for which to generate replacement pieces</param>
-    /// <returns>A dictionary of coordinates and piece types for the new pieces. Keys are coordinates such that the
-    /// new pieces are placed on top of the board for dropping on the board.</returns>
+    /// <returns>A dictionary of coordinates and piece types for the new pieces. The new pieces are
+    /// generated for the top locations in the column (placing them higher for a drop or similar is left
+    /// for the user of this class).</returns>
     private Dictionary<Vector2Int, int> GenerateReplacementPieces(List<Vector2Int> removed)
     {
         var result = new Dictionary<Vector2Int, int>();
@@ -238,14 +239,13 @@ public class Board
     }
 
     /// <summary>
-    /// Remove pieces in the given coordinates on the board an place the given new pieces on the
-    /// board. When pieces are removed, the existing pieces "fall down" to fill the empty spaces
+    /// Remove pieces in the given coordinates on the board and place the given new pieces on the
+    /// board. When pieces are removed, the existing pieces move down to fill the empty spaces
     /// and the new pieces will be placed on top of the columns. Triggers events for the removal
-    /// of the old pieces and the addition of new pieces. Note that the coordinates for the add
-    /// events are on top of the board 
+    /// of the old pieces, addition of new pieces and movement of existing pieces.
     /// </summary>
-    /// <param name="removed"></param>
-    /// <param name="replacement"></param>
+    /// <param name="removed">Coordinates of removed pieces</param>
+    /// <param name="replacement">Coordinates and types of the new pieces</param>
     private void ReplacePieces(List<Vector2Int> removed, Dictionary<Vector2Int, int> replacement)
     {
         foreach (var r in removed)
@@ -288,14 +288,14 @@ public class Board
         bool emptyFound = false;
         for (int y = Height - 1; y > -1; y--)
         {            
-            if (EmptyAt(x, y))
+            if (IsEmpty(x, y))
             {
                 emptyFound = true;
                 continue;
             }
             
-            // Redundant empty check since we didn't continue but maybe better readability
-            if (emptyFound && !EmptyAt(x, y))
+            // The current piece is not empty since we didn't continue above.
+            if (emptyFound)
             {
                 return y;
             }
@@ -308,7 +308,7 @@ public class Board
     {
         for (int y = Height - 1; y > -1; y--)
         {
-            if (EmptyAt(x, y))
+            if (IsEmpty(x, y))
             {
                 return y;
             }
@@ -317,14 +317,17 @@ public class Board
         return null;
     }
 
-    private bool EmptyAt(int x, int y)
+    private bool IsEmpty(int x, int y)
     {
         return pieces[x, y] == EmptyPiece;
     }
 
     /// <summary>
-    /// Calculates the Y coordinate for the i:th replacement piece in a column. The replacement pieces will
+    /// The Y coordinate for the i:th replacement piece in a column. The replacement pieces will
     /// appear on top of the column it is added to.
+    /// 
+    /// This method may look a bit silly as it is only identity, but we're sort of converting
+    /// from index in the list of added pieces to a Y coordinate.
     /// </summary>
     /// <param name="i">The index of the replacement piece.</param>
     /// <returns>The y coordinate for the replacement piece.</returns>
