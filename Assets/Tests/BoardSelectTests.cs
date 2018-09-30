@@ -88,7 +88,6 @@ public class BoardSelectTests
         var xsInSelected = GetCharCoorinates(c.Selected, 'X');
         Assert.That(xsInSelected.Count, Is.EqualTo(1));
         var selected = xsInSelected.First();
-        var moves = GetNumberCoordinates(c.ExpectedMovesFrom, c.ExpectedMovesTo);
 
         b.SelectPiece(selected);
 
@@ -96,6 +95,7 @@ public class BoardSelectTests
         // digit encoding of the test cases doesn't work.
         if (!string.IsNullOrEmpty(c.ExpectedMovesFrom) && !string.IsNullOrEmpty(c.ExpectedMovesTo))
         {
+            var moves = GetNumberCoordinates(c.ExpectedMovesFrom, c.ExpectedMovesTo);
             Assert.That(
                 moveEventArgsReceived
                 .Select(x => new Tuple<Vector2Int, Vector2Int>(x.OldCoordinates, x.NewCoordinates)),
